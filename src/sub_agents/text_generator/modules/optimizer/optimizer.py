@@ -36,7 +36,7 @@ class Optimizer:
         optimized_paragraphs = [p for p in paragraphs if p.strip()]
         return "\n\n".join(optimized_paragraphs)
 
-    def optimize(self, text, original_topic, content_type="blog_article", tone="neutral", keywords=None):
+    def optimize(self, text, original_topic, content_type="blog_article", tone="neutral", keywords=None, auto_revise: bool = True, _revision_round: int = 0):
         logger.info(f"Starting optimization for content type: {content_type}...")
 
         optimized_text = self.preserve_paragraphs(text)
@@ -145,10 +145,101 @@ class Optimizer:
             "promoting originality and clarity in line with content quality standards.)\n\n"
             f"**Final Optimization Score:** {final_score:.0f}/100\n"
         )
+        
         if final_score < self.benchmark_score:
-            score_report += "(Score falls below the established benchmark of 60, suggesting a need for manual review to ensure quality and effectiveness.)\n"
+            score_report += (
+                "(Score falls below the established benchmark of "
+                f"{self.benchmark_score}/100, indicating that the content may require "
+                "further refinement or revision to meet quality standards.)\n"
+            )
 
+        # Build notes for this optimization pass
         notes = score_report
-        logger.info(f"Optimization complete. Final Score: {final_score:.0f}")
 
+        # --- Automatic Revision Step ---
+        MAX_REVISION_ROUNDS = 2 
+        if (
+            final_score < self.benchmark_score
+            and auto_revise
+            and _revision_round < MAX_REVISION_ROUNDS
+        ):
+            logger.info(
+                f"Final score {final_score:.0f} < benchmark {self.benchmark_score}. "
+                "Triggering automatic revision via Generator..."
+            )
+
+            # Build a revision prompt using current content + analysis notes
+            kw_text = ", ".join(keywords or []) if keywords else "None specified"
+            revision_prompt = (
+                "Rewrite the following content in a MUCH simpler and more readable way.\n"
+                "Your goal is to dramatically increase readability.\n\n"
+
+                "IMPORTANT — You MUST follow these rules:\n"
+                "- Write at a 6th–8th grade reading level.\n"
+                "- Use ONLY short sentences (8–14 words each).\n"
+                "- Use simple, everyday vocabulary.\n"
+                "- Break long paragraphs into small sections.\n"
+                "- Remove all unnecessary details.\n"
+                "- Prioritize clarity over style.\n"
+                "- Do not use complex phrasing.\n"
+                "- Avoid long introductions; get to the point quickly.\n"
+                "- Aim for a Flesch Reading Ease score ABOVE 60.\n\n"
+
+                f"Topic: {original_topic}\n"
+                f"Content Type: {content_type}\n"
+                f"Tone: {tone}\n"
+                f"Keywords: {kw_text}\n\n"
+
+                "Here is the content that must be simplified:\n"
+                "-----\n"
+                f"{optimized_text}\n"
+                "-----\n\n"
+
+                "Here are analysis notes showing weaknesses:\n"
+                "-----\n"
+                f"{notes}\n"
+                "-----\n\n"
+
+                "Now rewrite the content so it is extremely easy to read.\n"
+                "Return ONLY the simplified content with no explanations."
+            )
+
+            revised_text = self.generator.generate(revision_prompt)
+
+            # Safety check – if the LLM failed, fall back to original content
+            if not revised_text or "Error generating content" in revised_text:
+                logger.warning(
+                    "Automatic revision failed or returned an error. "
+                    "Returning original optimized text."
+                )
+                logger.info(f"Optimization complete. Final Score: {final_score:.0f}")
+                return optimized_text, final_score, notes
+
+            # Re-run optimization ONCE on the revised text (no further auto-revision)
+            logger.info("Running second optimization pass on revised content...")
+            
+            revised_optimized_text, revised_score, revised_notes = self.optimize(text=revised_text, original_topic=original_topic, content_type=content_type, tone=tone, keywords=keywords, auto_revise=True, _revision_round=_revision_round + 1)
+            # Log score improvement
+            logger.info(
+                f"Auto-Revision Performance:\n"
+                f" - Initial score: {final_score:.2f}\n"
+                f" - Revised score: {revised_score:.2f}\n"
+                f" - Improvement: {revised_score - final_score:.2f} points"
+            )
+
+            # Add improvement info to notes
+            improvement_text = (
+                f"\n\n[Auto-Revision Applied]\n"
+                f"Initial Score: {final_score:.2f}\n"
+                f"Revised Score: {revised_score:.2f}\n"
+                f"Score Improvement: {revised_score - final_score:.2f}"
+            )
+
+            revised_notes = (revised_notes or "") + improvement_text
+
+            return revised_optimized_text, revised_score, revised_notes
+            
+            
+        # --- Normal return path (no auto-revision or second pass) ---
+        logger.info(f"Optimization complete. Final Score: {final_score:.0f}")
         return optimized_text, final_score, notes

@@ -7,6 +7,7 @@ from openai import OpenAI
 from src.sub_agents.text_generator.modules.generator.content_generator import Generator
 from src.sub_agents.text_generator.modules.content_retrieval.llamaindex_retriever import Retriever
 from src.sub_agents.text_generator.modules.optimizer.optimizer import Optimizer
+from src.sub_agents.text_generator.modules.human_review.reviewer import Reviewer
 from langgraph.graph import StateGraph, END
 from dataclasses import dataclass, field
 from streamlit_chat import message
@@ -248,6 +249,7 @@ class AgentState:
     score: float = 0.0
     tone: str = "neutral"
     keywords: list = field(default_factory=list)
+    review_result: dict = field(default_factory=dict)
 
 def retrieve_content(state: AgentState) -> AgentState:
     retriever = Retriever()
@@ -270,14 +272,29 @@ def optimize_content(state: AgentState) -> AgentState:
     )
     return state
 
+def review_content(state: AgentState) -> AgentState:
+    reviewer = Reviewer(threshold=60.0)
+    state.review_result = reviewer.review(
+        content=state.optimized_text,
+        score=state.score,
+        notes=state.notes,
+    )
+    return state
+
+
 workflow = StateGraph(AgentState)
 workflow.add_node("retrieve", retrieve_content)
 workflow.add_node("generate", generate_content)
 workflow.add_node("optimize", optimize_content)
+workflow.add_node("review", review_content) 
+
 workflow.set_entry_point("retrieve")
+
 workflow.add_edge("retrieve", "generate")
 workflow.add_edge("generate", "optimize")
-workflow.add_edge("optimize", END)
+workflow.add_edge("optimize", "review")  
+workflow.add_edge("review", END)  
+
 app_graph = workflow.compile()
 
 # --- Sidebar --
@@ -555,16 +572,43 @@ else:
                             input_text=detailed_prompt, original_topic=user_input, content_type=content_type_key,
                             tone=tone, keywords=keywords_list
                         )
+                        
                         result = app_graph.invoke(initial_state)
+
+                        # --- Build rich response with review info ---
+                        review = result.get("review_result", {}) or {}
+                        approved = review.get("approved")
+                        decision = review.get("decision", "N/A")
+                        quality_band = review.get("quality_band", "N/A")
+                        comments = review.get("comments", [])
+
+                        comments_md = ""
+                        if comments:
+                            comments_md = "\n".join(f"- {c}" for c in comments)
+
+                        score_value = result.get("score", 0)
+
                         ai_response = (
                             f"### ✨ Optimized & Final Content\n"
                             f"{result.get('optimized_text', 'Not available.')}\n\n"
+                            f"---\n\n"
+                            f"### 🧪 Optimization Score\n"
+                            f"**{score_value:.1f} / 100** (Quality: `{quality_band}`)\n\n"
+                            f"### 📝 Review Decision\n"
+                            f"**{'✅ Approved' if approved else '⚠ Needs Revision'}** "
+                            f"(decision: `{decision}`)\n\n"
+                            f"{comments_md}\n\n"
+                            f"---\n\n"
+                            f"### 📌 Analysis Notes\n"
                             f"{result.get('notes', 'N/A')}"
                         )
+
                         st.session_state.history.append({
-                            "prompt": user_input, "response": ai_response
+                            "prompt": user_input,
+                            "response": ai_response
                         })
                         st.rerun()
+
 
         # Example Prompt
         if len(st.session_state.history) == 1:
