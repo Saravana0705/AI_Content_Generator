@@ -1,0 +1,7 @@
+[browser]
+# Disable telemetry/usage stats during automated runs
+gatherUsageStats = false
+
+[global]
+# Attempt to disable onboarding welcome prompt (best-effort)
+disableWelcome = true

@@ -1,15 +1,154 @@
-import streamlit as st
+try:
+    import streamlit as st
+    from streamlit_chat import message
+    STREAMLIT_AVAILABLE = True
+except Exception:
+    # Allow importing `app` in test environments without streamlit installed.
+    STREAMLIT_AVAILABLE = False
+    class _DummyStreamlit:
+        def error(self, *args, **kwargs):
+            pass
+        def stop(self, *args, **kwargs):
+            raise SystemExit()
+        def set_page_config(self, *args, **kwargs):
+            pass
+        def markdown(self, *args, **kwargs):
+            pass
+        @property
+        def session_state(self):
+            # simple mutable mapping used by the app
+            if not hasattr(self, "_session_state"):
+                self._session_state = {}
+            return self._session_state
+        @property
+        def sidebar(self):
+            from contextlib import contextmanager
+            @contextmanager
+            def _cm():
+                yield self
+            return _cm()
+        def __getattr__(self, name):
+            # Return a no-op callable for unknown streamlit functions used during import
+            def _noop(*args, **kwargs):
+                return None
+            return _noop
+    st = _DummyStreamlit()
+    def message(*args, **kwargs):
+        return None
 from dotenv import load_dotenv
 import os
 import csv  
 from datetime import datetime  
 from openai import OpenAI
-from src.sub_agents.text_generator.modules.generator.content_generator import Generator
-from src.sub_agents.text_generator.modules.content_retrieval.llamaindex_retriever import Retriever
-from src.sub_agents.text_generator.modules.optimizer.optimizer import Optimizer
-from langgraph.graph import StateGraph, END
+try:
+    from langgraph.graph import StateGraph, END
+except Exception:
+    # Provide lightweight fallback so tests can import `app` without langgraph installed.
+    class END:
+        pass
+    class StateGraph:
+        def __init__(self, state_cls):
+            pass
+        def add_node(self, *args, **kwargs):
+            pass
+        def set_entry_point(self, *args, **kwargs):
+            pass
+        def add_edge(self, *args, **kwargs):
+            pass
+        def compile(self):
+            return None
 from dataclasses import dataclass, field
-from streamlit_chat import message
+
+# Lazy imports to avoid timeout during app startup
+Generator = None
+Retriever = None
+Optimizer = None
+Analyzer = None
+
+
+def load_sub_agents():
+    """Lazy load sub-agents to avoid blocking startup."""
+    global Generator, Retriever, Optimizer, Analyzer
+    if Generator is None:
+        try:
+            from src.sub_agents.text_generator.modules.generator.content_generator import Generator as _Gen
+            from src.sub_agents.text_generator.modules.content_retrieval.llamaindex_retriever import Retriever as _Ret
+            from src.sub_agents.text_generator.modules.optimizer.optimizer import Optimizer as _Opt
+            from src.sub_agents.text_generator.modules.analyzer import Analyzer as _Analyzer
+            Generator = _Gen
+            Retriever = _Ret
+            Optimizer = _Opt
+            Analyzer = _Analyzer
+        except Exception as e:
+            st.error(f"Failed to load sub-agents: {e}")
+            st.stop()
+
+# --- Backend Definitions (moved so tests can import without running UI) ---
+from dataclasses import dataclass, field
+
+@dataclass
+class AgentState:
+    input_text: str = ""
+    original_topic: str = ""
+    content_type: str = "blog_article"
+    retrieved_data: str = ""
+    generated_text: str = ""
+    optimized_text: str = ""
+    notes: str = ""
+    score: float = 0.0
+    tone: str = "neutral"
+    keywords: list = field(default_factory=list)
+    analysis: dict = field(default_factory=dict)
+
+def retrieve_content(state: AgentState) -> AgentState:
+    retriever = Retriever()
+    state.retrieved_data = retriever.retrieve(state.input_text) or "No data retrieved"
+    return state
+
+def generate_content(state: AgentState) -> AgentState:
+    generator = Generator()
+    state.generated_text = generator.generate(state.input_text) or "No content generated"
+    return state
+
+def optimize_content(state: AgentState) -> AgentState:
+    optimizer = Optimizer()
+    state.optimized_text, state.score, state.notes = optimizer.optimize(
+        text=state.generated_text,
+        original_topic=state.original_topic,
+        content_type=state.content_type,
+        tone=state.tone,
+        keywords=state.keywords
+    )
+    return state
+
+def analyze_content(state: AgentState) -> AgentState:
+    """Analyze generated content and attach analysis metadata to state."""
+    if Analyzer is None:
+        try:
+            load_sub_agents()
+        except Exception:
+            state.analysis = {"error": "Analyzer not available"}
+            return state
+
+    try:
+        analyzer = Analyzer()
+        text_to_analyze = state.generated_text or state.optimized_text or ""
+        state.analysis = analyzer.analyze(text_to_analyze)
+    except Exception as e:
+        state.analysis = {"error": str(e)}
+    return state
+
+workflow = StateGraph(AgentState)
+workflow.add_node("retrieve", retrieve_content)
+workflow.add_node("generate", generate_content)
+workflow.add_node("analyze", analyze_content)
+workflow.add_node("optimize", optimize_content)
+workflow.set_entry_point("retrieve")
+workflow.add_edge("retrieve", "generate")
+workflow.add_edge("generate", "analyze")
+workflow.add_edge("analyze", "optimize")
+workflow.add_edge("optimize", END)
+app_graph = workflow.compile()
 
 # --- Page Configuration & CSS ---
 st.set_page_config(page_title="AI Content Generator", page_icon="🧠", layout="wide")
@@ -214,6 +353,9 @@ if not api_key:
     st.error("OPENAI_API_KEY not found in .env file. Please add it and restart.")
     st.stop()
 
+# Load sub-agents after confirming API key exists
+load_sub_agents()
+
 # --- NEW: CSV Saving Functionality ---
 CSV_FILE = 'sus_scores.csv'
 
@@ -235,50 +377,6 @@ def save_to_csv(score, grade, adjective, responses):
             writer.writerow(header)
         writer.writerow(data_row)
 # --- END NEW SECTION ---
-
-@dataclass
-class AgentState:
-    input_text: str = ""
-    original_topic: str = ""
-    content_type: str = "blog_article"
-    retrieved_data: str = ""
-    generated_text: str = ""
-    optimized_text: str = ""
-    notes: str = ""
-    score: float = 0.0
-    tone: str = "neutral"
-    keywords: list = field(default_factory=list)
-
-def retrieve_content(state: AgentState) -> AgentState:
-    retriever = Retriever()
-    state.retrieved_data = retriever.retrieve(state.input_text) or "No data retrieved"
-    return state
-
-def generate_content(state: AgentState) -> AgentState:
-    generator = Generator()
-    state.generated_text = generator.generate(state.input_text) or "No content generated"
-    return state
-
-def optimize_content(state: AgentState) -> AgentState:
-    optimizer = Optimizer()
-    state.optimized_text, state.score, state.notes = optimizer.optimize(
-        text=state.generated_text,
-        original_topic=state.original_topic,
-        content_type=state.content_type,
-        tone=state.tone,
-        keywords=state.keywords
-    )
-    return state
-
-workflow = StateGraph(AgentState)
-workflow.add_node("retrieve", retrieve_content)
-workflow.add_node("generate", generate_content)
-workflow.add_node("optimize", optimize_content)
-workflow.set_entry_point("retrieve")
-workflow.add_edge("retrieve", "generate")
-workflow.add_edge("generate", "optimize")
-workflow.add_edge("optimize", END)
-app_graph = workflow.compile()
 
 # --- Sidebar --
 with st.sidebar:
