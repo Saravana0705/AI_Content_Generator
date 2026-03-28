@@ -1,0 +1,33 @@
+{
+  "run_id": "4da677baf890",
+  "timestamp_utc": "2026-03-05 15:29:33",
+  "provider": "stability",
+  "model": "stable-diffusion-xl-1024-v1-0",
+  "raw_prompt": "A red vintage bicycle leaning against a brick wall with ivy, golden hour lighting",
+  "style": "photorealistic",
+  "size": "1024x1024",
+  "final_prompt": "A red vintage bicycle leaning against a brick wall with ivy, golden hour lighting\nphotorealistic",
+  "retries": 0,
+  "latency_sec": 11.927998299999672,
+  "calibration_path": "calibration/image_thresholds.json",
+  "thresholds": {
+    "clip_threshold": 0.2856234014034271,
+    "clip_q": 0.1,
+    "aesthetic_threshold": 6.084645795822144,
+    "aesthetic_r": 0.1
+  },
+  "scores": {
+    "ok": true,
+    "clip_score": 0.3274388313293457,
+    "aesthetic_score": 7.062430381774902,
+    "openclip_model": "ViT-B-32",
+    "openclip_pretrained": "openai",
+    "aesthetic_head_path": "models/aesthetic_head.pth",
+    "device": "cpu"
+  },
+  "passed": true,
+  "generation_meta": {
+    "provider": "stability",
+    "model": "stable-diffusion-xl-1024-v1-0"
+  }
+}

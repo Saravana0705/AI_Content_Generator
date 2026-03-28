@@ -1,0 +1,4 @@
+model_label,n,pass_rate,clip_mean,aesthetic_mean,latency_mean,retry_rate
+OpenAI Image-1 Mini,10,100.0,0.3297,6.8591,48.8558,0.0
+Stability SDXL,10,80.0,0.3422,6.49,14.7277,20.0
+Freepik Mystic,10,80.0,0.3265,6.7688,18.6271,30.0

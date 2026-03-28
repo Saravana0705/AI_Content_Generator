@@ -1,0 +1,401 @@
+idx,raw_prompt,final_prompt,style,size,technical_ok,clip_score,aesthetic_score,notes,model
+1,A red apple on a wooden table with soft natural lighting,"A red apple on a wooden table with soft natural lighting
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.327075243,6.600981236,Technical validation OK.,gpt-image-1-mini
+2,Two golden retrievers playing in a snowy park,"Two golden retrievers playing in a snowy park
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.396611631,7.146003723,Technical validation OK.,gpt-image-1-mini
+3,A futuristic city skyline at night with neon lights,"A futuristic city skyline at night with neon lights
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.328196257,7.253720284,Technical validation OK.,gpt-image-1-mini
+4,A medieval castle on a hill under stormy clouds,"A medieval castle on a hill under stormy clouds
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.317357391,7.503058434,Technical validation OK.,gpt-image-1-mini
+5,Three colorful parrots sitting on a branch,"Three colorful parrots sitting on a branch
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.335187525,6.927106857,Technical validation OK.,gpt-image-1-mini
+6,A cozy coffee shop interior with warm lighting,"A cozy coffee shop interior with warm lighting
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.322861403,7.005791664,Technical validation OK.,gpt-image-1-mini
+7,A mountain lake surrounded by pine trees at sunrise,"A mountain lake surrounded by pine trees at sunrise
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.328514397,7.674444199,Technical validation OK.,gpt-image-1-mini
+8,A vintage car parked beside a countryside road,"A vintage car parked beside a countryside road
+digital illustration, crisp shapes, pleasing composition
+Spatial constraints: beside.
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.309145838,8.930450439,Technical validation OK.,gpt-image-1-mini
+9,A portrait of an elderly fisherman with weathered skin,"A portrait of an elderly fisherman with weathered skin
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.354046196,7.000336647,Technical validation OK.,gpt-image-1-mini
+10,A bustling street market in Morocco,"A bustling street market in Morocco
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.334688336,8.433002472,Technical validation OK.,gpt-image-1-mini
+11,A minimalist modern living room interior,"A minimalist modern living room interior
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.273793221,6.016368389,Technical validation OK.,gpt-image-1-mini
+12,A dragon flying above a fantasy kingdom,"A dragon flying above a fantasy kingdom
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.31233567,7.157056808,Technical validation OK.,gpt-image-1-mini
+13,An astronaut walking on Mars with a rocket behind,"An astronaut walking on Mars with a rocket behind
+photorealistic, natural lighting, high detail, sharp focus
+Spatial constraints: behind.
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.306158453,6.484828949,Technical validation OK.,gpt-image-1-mini
+14,A tropical beach with turquoise water and palm trees,"A tropical beach with turquoise water and palm trees
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.326957583,8.26706028,Technical validation OK.,gpt-image-1-mini
+15,A cyberpunk alleyway with rain and neon signs,"A cyberpunk alleyway with rain and neon signs
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.351259828,7.484825134,Technical validation OK.,gpt-image-1-mini
+16,A close-up of a blooming sunflower,"A close-up of a blooming sunflower
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.321442217,6.623488426,Technical validation OK.,gpt-image-1-mini
+17,A snowy cabin in the woods at dusk,"A snowy cabin in the woods at dusk
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.339272767,7.98263073,Technical validation OK.,gpt-image-1-mini
+18,A waterfall flowing into a crystal clear pool,"A waterfall flowing into a crystal clear pool
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.328645527,8.362384796,Technical validation OK.,gpt-image-1-mini
+19,A lion resting in the African savannah,"A lion resting in the African savannah
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.323440164,6.599658012,Technical validation OK.,gpt-image-1-mini
+20,A high-tech robotics laboratory,"A high-tech robotics laboratory
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.288131744,6.987007141,Technical validation OK.,gpt-image-1-mini
+21,A rustic farmhouse surrounded by wheat fields,"A rustic farmhouse surrounded by wheat fields
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.355167538,7.140251637,Technical validation OK.,gpt-image-1-mini
+22,A small kitten playing with yarn,"A small kitten playing with yarn
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.329459339,6.627549171,Technical validation OK.,gpt-image-1-mini
+23,A desert landscape with sand dunes at sunset,"A desert landscape with sand dunes at sunset
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.327295542,6.897764206,Technical validation OK.,gpt-image-1-mini
+24,A sailboat in the middle of a calm ocean,"A sailboat in the middle of a calm ocean
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.338072091,7.010816574,Technical validation OK.,gpt-image-1-mini
+25,A majestic eagle flying over mountains,"A majestic eagle flying over mountains
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.329316765,6.388979912,Technical validation OK.,gpt-image-1-mini
+26,A serene Japanese garden with koi pond,"A serene Japanese garden with koi pond
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.34719491,7.579767227,Technical validation OK.,gpt-image-1-mini
+27,A chef plating gourmet food in a restaurant kitchen,"A chef plating gourmet food in a restaurant kitchen
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.268195152,6.781128407,Technical validation OK.,gpt-image-1-mini
+28,A dramatic thunderstorm over a city skyline,"A dramatic thunderstorm over a city skyline
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.295883834,5.947206974,Technical validation OK.,gpt-image-1-mini
+29,A fairytale village in the mountains,"A fairytale village in the mountains
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.311667562,7.703575134,Technical validation OK.,gpt-image-1-mini
+30,A close-up portrait of a ballet dancer,"A close-up portrait of a ballet dancer
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.336052358,6.143636703,Technical validation OK.,gpt-image-1-mini
+31,An ancient Roman amphitheater at golden hour,"An ancient Roman amphitheater at golden hour
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.314295501,7.574791908,Technical validation OK.,gpt-image-1-mini
+32,A modern skyscraper reflected in water,"A modern skyscraper reflected in water
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.316689312,5.97863102,Technical validation OK.,gpt-image-1-mini
+33,A colorful hot air balloon festival,"A colorful hot air balloon festival
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.301666319,7.025738716,Technical validation OK.,gpt-image-1-mini
+34,A cozy bedroom with sunlight streaming through window,"A cozy bedroom with sunlight streaming through window
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.32533896,7.712915421,Technical validation OK.,gpt-image-1-mini
+35,A steampunk airship floating in clouds,"A steampunk airship floating in clouds
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.361575216,7.017366409,Technical validation OK.,gpt-image-1-mini
+36,A snowy owl perched on a tree branch,"A snowy owl perched on a tree branch
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.324858099,7.286394119,Technical validation OK.,gpt-image-1-mini
+37,A bustling subway station in Tokyo,"A bustling subway station in Tokyo
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.291164547,5.974299431,Technical validation OK.,gpt-image-1-mini
+38,A peaceful countryside road in autumn,"A peaceful countryside road in autumn
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.340660542,8.117791176,Technical validation OK.,gpt-image-1-mini
+39,A dramatic cliffside overlooking the sea,"A dramatic cliffside overlooking the sea
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.289070219,7.713543892,Technical validation OK.,gpt-image-1-mini
+40,A futuristic spaceship interior,"A futuristic spaceship interior
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.310053289,6.659412861,Technical validation OK.,gpt-image-1-mini
+41,A market square in a European town,"A market square in a European town
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.282833219,7.516313553,Technical validation OK.,gpt-image-1-mini
+42,A wildlife safari scene with elephants,"A wildlife safari scene with elephants
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.33166936,7.097826004,Technical validation OK.,gpt-image-1-mini
+43,A neon-lit arcade at night,"A neon-lit arcade at night
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.338321686,7.509981155,Technical validation OK.,gpt-image-1-mini
+44,A vineyard in Tuscany at sunset,"A vineyard in Tuscany at sunset
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.33706522,7.266704559,Technical validation OK.,gpt-image-1-mini
+45,A cozy fireplace in a mountain lodge,"A cozy fireplace in a mountain lodge
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.31068784,7.742847443,Technical validation OK.,gpt-image-1-mini
+46,A coral reef underwater scene,"A coral reef underwater scene
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.312389851,6.75813818,Technical validation OK.,gpt-image-1-mini
+47,A child flying a kite in a green field,"A child flying a kite in a green field
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.345780104,7.187015533,Technical validation OK.,gpt-image-1-mini
+48,A dramatic portrait of a knight in armor,"A dramatic portrait of a knight in armor
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.316566229,7.786616325,Technical validation OK.,gpt-image-1-mini
+49,A panoramic view of a canyon,"A panoramic view of a canyon
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.269921869,7.650635719,Technical validation OK.,gpt-image-1-mini
+50,A city skyline during golden hour,"A city skyline during golden hour
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.293933928,6.882164001,Technical validation OK.,gpt-image-1-mini
+51,A small fishing boat at sunrise,"A small fishing boat at sunrise
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.337471873,7.036527634,Technical validation OK.,gpt-image-1-mini
+52,A fantasy wizard casting a spell,"A fantasy wizard casting a spell
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.312156469,6.715312004,Technical validation OK.,gpt-image-1-mini
+53,A luxury penthouse apartment interior,"A luxury penthouse apartment interior
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.28570205,7.517986298,Technical validation OK.,gpt-image-1-mini
+54,A rainforest waterfall with mist,"A rainforest waterfall with mist
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.333352923,7.833385468,Technical validation OK.,gpt-image-1-mini
+55,A snowy mountain peak above clouds,"A snowy mountain peak above clouds
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.308392882,6.102018833,Technical validation OK.,gpt-image-1-mini
+56,A traditional Indian temple at sunrise,"A traditional Indian temple at sunrise
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.351833552,7.555653572,Technical validation OK.,gpt-image-1-mini
+57,A glass greenhouse filled with tropical plants,"A glass greenhouse filled with tropical plants
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.331311673,7.274187088,Technical validation OK.,gpt-image-1-mini
+58,A medieval marketplace scene,"A medieval marketplace scene
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.274627507,8.1317873,Technical validation OK.,gpt-image-1-mini
+59,A tranquil monastery in the hills,"A tranquil monastery in the hills
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.310570389,7.648127556,Technical validation OK.,gpt-image-1-mini
+60,A bustling harbor with ships,"A bustling harbor with ships
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.306090862,7.693001747,Technical validation OK.,gpt-image-1-mini
+61,A futuristic robot in a laboratory,"A futuristic robot in a laboratory
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.27599746,7.379331589,Technical validation OK.,gpt-image-1-mini
+62,A vintage bookstore interior,"A vintage bookstore interior
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.316818625,7.152955055,Technical validation OK.,gpt-image-1-mini
+63,A dramatic sunset over the ocean,"A dramatic sunset over the ocean
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.280375868,7.128460884,Technical validation OK.,gpt-image-1-mini
+64,A portrait of a violinist performing,"A portrait of a violinist performing
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.293045908,6.265969753,Technical validation OK.,gpt-image-1-mini
+65,A coastal lighthouse at dusk,"A coastal lighthouse at dusk
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.298531562,7.678781509,Technical validation OK.,gpt-image-1-mini
+66,A colorful carnival parade,"A colorful carnival parade
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.30340907,6.810830116,Technical validation OK.,gpt-image-1-mini
+67,A peaceful lake with reflection of mountains,"A peaceful lake with reflection of mountains
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.286192417,6.646012306,Technical validation OK.,gpt-image-1-mini
+68,A farmer harvesting crops in a field,"A farmer harvesting crops in a field
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.329005182,7.026337147,Technical validation OK.,gpt-image-1-mini
+69,A quiet alley in an old European town,"A quiet alley in an old European town
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.278912723,6.091428757,Technical validation OK.,gpt-image-1-mini
+70,A modern art museum interior,"A modern art museum interior
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.314415008,5.638454914,Technical validation OK.,gpt-image-1-mini
+71,A spaceship landing on an alien planet,"A spaceship landing on an alien planet
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.31988582,6.882986069,Technical validation OK.,gpt-image-1-mini
+72,A horse running through a meadow,"A horse running through a meadow
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.326305896,7.4677248,Technical validation OK.,gpt-image-1-mini
+73,A historic cathedral interior,"A historic cathedral interior
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.28943491,6.912982941,Technical validation OK.,gpt-image-1-mini
+74,A dramatic portrait of a pirate captain,"A dramatic portrait of a pirate captain
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.334562659,7.420308113,Technical validation OK.,gpt-image-1-mini
+75,A small island with palm trees,"A small island with palm trees
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.348022252,7.560127258,Technical validation OK.,gpt-image-1-mini
+76,A mountain village covered in snow,"A mountain village covered in snow
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.330087066,8.095657349,Technical validation OK.,gpt-image-1-mini
+77,A luxury yacht on the Mediterranean sea,"A luxury yacht on the Mediterranean sea
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.301190287,7.250369072,Technical validation OK.,gpt-image-1-mini
+78,A medieval knight standing in battlefield,"A medieval knight standing in battlefield
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.288358927,8.190371513,Technical validation OK.,gpt-image-1-mini
+79,A futuristic smart home interior,"A futuristic smart home interior
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.348997116,6.794344902,Technical validation OK.,gpt-image-1-mini
+80,Two cyclists riding side by side on a mountain trail during sunrise,"Two cyclists riding side by side on a mountain trail during sunrise
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.387865156,7.745549202,Technical validation OK.,gpt-image-1-mini
+81,A barista preparing coffee behind a counter in a modern café,"A barista preparing coffee behind a counter in a modern café
+photorealistic, natural lighting, high detail, sharp focus
+Spatial constraints: behind.
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.296008348,7.577058792,Technical validation OK.,gpt-image-1-mini
+82,Three astronauts standing in front of a lunar rover on the moon,"Three astronauts standing in front of a lunar rover on the moon
+anime style, clean linework, vibrant colors, studio quality
+Spatial constraints: in front of.
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.343337983,6.80255127,Technical validation OK.,gpt-image-1-mini
+83,A dramatic close-up of a tiger with intense eye contact,"A dramatic close-up of a tiger with intense eye contact
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.327007771,5.947275162,Technical validation OK.,gpt-image-1-mini
+84,A family having a picnic under a large oak tree in spring,"A family having a picnic under a large oak tree in spring
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.330566674,7.759524345,Technical validation OK.,gpt-image-1-mini
+85,A futuristic train passing through a neon-lit city at night,"A futuristic train passing through a neon-lit city at night
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.336402088,6.069037914,Technical validation OK.,gpt-image-1-mini
+86,A classical orchestra performing on a grand stage,"A classical orchestra performing on a grand stage
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.31712541,6.086380005,Technical validation OK.,gpt-image-1-mini
+87,A surfer riding a large wave during sunset,"A surfer riding a large wave during sunset
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.312238276,7.100876808,Technical validation OK.,gpt-image-1-mini
+88,A group of friends hiking across a suspension bridge,"A group of friends hiking across a suspension bridge
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.314378023,7.666585922,Technical validation OK.,gpt-image-1-mini
+89,A scientist working inside a high-tech research laboratory,"A scientist working inside a high-tech research laboratory
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.296844304,6.397685051,Technical validation OK.,gpt-image-1-mini
+90,A crowded food festival with colorful decorations,"A crowded food festival with colorful decorations
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.310317695,7.298369884,Technical validation OK.,gpt-image-1-mini
+91,A firefighter rescuing a cat from a tree,"A firefighter rescuing a cat from a tree
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.358896255,5.717781067,Technical validation OK.,gpt-image-1-mini
+92,A romantic dinner setup on a rooftop overlooking the city,"A romantic dinner setup on a rooftop overlooking the city
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.3258681,7.837927818,Technical validation OK.,gpt-image-1-mini
+93,A skateboarder performing a trick in an urban park,"A skateboarder performing a trick in an urban park
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.336762786,7.061882496,Technical validation OK.,gpt-image-1-mini
+94,A wildlife scene with zebras crossing a river,"A wildlife scene with zebras crossing a river
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.34257552,6.822523117,Technical validation OK.,gpt-image-1-mini
+95,A baker decorating a cake in a cozy kitchen,"A baker decorating a cake in a cozy kitchen
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.299812794,7.316250801,Technical validation OK.,gpt-image-1-mini
+96,A large waterfall surrounded by lush green forest,"A large waterfall surrounded by lush green forest
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.319654822,8.585328102,Technical validation OK.,gpt-image-1-mini
+97,A modern office space with people collaborating at desks,"A modern office space with people collaborating at desks
+photorealistic, natural lighting, high detail, sharp focus
+
+Negative: blurry, logo, low resolution, text, watermark.",photorealistic,1024x1024,TRUE,0.252198815,6.747312546,Technical validation OK.,gpt-image-1-mini
+98,A painter working on a large canvas in an art studio,"A painter working on a large canvas in an art studio
+anime style, clean linework, vibrant colors, studio quality
+
+Negative: logo, text, watermark.",anime,1024x1024,TRUE,0.306139588,5.627418518,Technical validation OK.,gpt-image-1-mini
+99,A futuristic drone flying above a smart city skyline,"A futuristic drone flying above a smart city skyline
+3D render, soft global illumination, high poly, cinematic lighting
+
+Negative: logo, text, watermark.",3d,1024x1024,TRUE,0.284915566,5.736172676,Technical validation OK.,gpt-image-1-mini
+100,A person cycling in Italian countryside during sunset,"A person cycling in Italian countryside during sunset
+digital illustration, crisp shapes, pleasing composition
+
+Negative: logo, text, watermark.",illustration,1024x1024,TRUE,0.375306308,7.732322693,Technical validation OK.,gpt-image-1-mini

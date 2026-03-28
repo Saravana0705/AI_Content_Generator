@@ -1,0 +1,9 @@
+{
+  "ok": true,
+  "clip_score": 0.25257742404937744,
+  "aesthetic_score": 5.622794151306152,
+  "openclip_model": "ViT-B-32",
+  "openclip_pretrained": "openai",
+  "aesthetic_head_path": "models/aesthetic_head.pth",
+  "device": "cpu"
+}

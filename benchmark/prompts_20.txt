@@ -1,0 +1,20 @@
+en|A majestic lion standing on a rock in the African savannah at sunset
+en|A futuristic city with tall glass skyscrapers at night illuminated by neon lights
+en|A calm mountain lake surrounded by snow-covered peaks and dense pine forests
+en|A young woman reading a book in a cozy café by the window
+en|Three playful dogs running across a green field in the park
+en|A traditional Japanese garden with a koi pond, stone lanterns, and cherry blossoms
+en|A cyclist riding quickly down a winding mountain road
+en|A busy street market in Marrakesh filled with colorful spices and many people
+en|A red cat sitting beside a blue flower pot on a wooden table
+en|A mystical castle on a mountain above the clouds surrounded by flying dragons
+de|Ein majestätischer Löwe steht auf einem Felsen in der afrikanischen Savanne bei Sonnenuntergang
+de|Eine futuristische Stadt mit hohen Glaswolkenkratzern bei Nacht, beleuchtet von Neonlichtern
+de|Ein ruhiger Bergsee umgeben von schneebedeckten Bergen und dichten Tannenwäldern
+de|Eine junge Frau liest ein Buch in einem gemütlichen Café am Fenster
+de|Drei verspielte Hunde laufen über eine grüne Wiese im Park
+de|Ein traditioneller japanischer Garten mit Koiteich, Steinlaternen und Kirschblüten
+de|Ein Radfahrer fährt schnell eine kurvige Bergstraße hinunter
+de|Ein belebter Straßenmarkt in Marrakesch mit bunten Gewürzen und vielen Menschen
+de|Eine rote Katze sitzt neben einem blauen Blumentopf auf einem Holztisch
+de|Eine mystische Burg auf einem Berg über den Wolken, umgeben von fliegenden Drachen

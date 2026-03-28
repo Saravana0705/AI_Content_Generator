@@ -1,0 +1,47 @@
+{
+  "benchmark_run_id": "20260310_142557",
+  "timestamp": "2026-03-10 14:30:13",
+  "prompt_id": "p08",
+  "provider": "openai",
+  "model": "gpt-image-1-mini",
+  "raw_prompt": "A busy street market in Marrakesh filled with colorful spices and many people",
+  "enhanced_prompt": "A busy street market in Marrakesh filled with colorful spices and many people\nphotorealistic, natural lighting, high detail, sharp focus\nNegative: blurry, logo, low resolution, text, watermark.",
+  "final_prompt": "A busy street market in Marrakesh filled with colorful spices and many people\nphotorealistic, natural lighting, high detail, sharp focus\nNegative: blurry, logo, low resolution, text, watermark.",
+  "prompt_language": "en",
+  "intent": {
+    "raw_prompt": "A busy street market in Marrakesh filled with colorful spices and many people",
+    "source_language": "en",
+    "style": "photorealistic",
+    "size": "1024x1024",
+    "subjects": [
+      "colorful spices and many people"
+    ],
+    "counts": {},
+    "spatial_relations": [],
+    "negative_constraints": [],
+    "must_have": [
+      "colorful spices and many people"
+    ],
+    "exclude": [],
+    "enhanced_prompt": "A busy street market in Marrakesh filled with colorful spices and many people\nphotorealistic, natural lighting, high detail, sharp focus\nNegative: blurry, logo, low resolution, text, watermark."
+  },
+  "image_meta": {
+    "provider": "openai",
+    "model": "gpt-image-1-mini",
+    "size": "1024x1024",
+    "encoding": "b64_json"
+  },
+  "technical_ok": true,
+  "scoring_ok": true,
+  "scoring_error": "",
+  "clip_score": 0.38275831937789917,
+  "clip_threshold": 0.2856234014034271,
+  "clip_q": 0.1,
+  "aesthetic_score": 7.217650413513184,
+  "aesthetic_threshold": 6.084645795822144,
+  "aesthetic_r": 0.1,
+  "calibration_window_size": 100,
+  "calibrated_at": "2026-03-04T18:12:17Z",
+  "retries": 0,
+  "approved": true
+}

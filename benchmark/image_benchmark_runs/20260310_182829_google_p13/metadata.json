@@ -1,0 +1,50 @@
+{
+  "benchmark_run_id": "20260310_182355",
+  "timestamp": "2026-03-10 18:28:29",
+  "prompt_id": "p13",
+  "provider": "google",
+  "model": "gemini-3.1-flash-image-preview",
+  "raw_prompt": "Ein ruhiger Bergsee umgeben von schneebedeckten Bergen und dichten Tannenwäldern",
+  "enhanced_prompt": "Ein ruhiger Bergsee umgeben von schneebedeckten Bergen und dichten Tannenwäldern\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf.",
+  "final_prompt": "Ein ruhiger Bergsee umgeben von schneebedeckten Bergen und dichten Tannenwäldern\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf.",
+  "prompt_language": "de",
+  "intent": {
+    "raw_prompt": "Ein ruhiger Bergsee umgeben von schneebedeckten Bergen und dichten Tannenwäldern",
+    "source_language": "de",
+    "style": "photorealistic",
+    "size": "1024x1024",
+    "subjects": [
+      "ruhiger bergsee umgeben von schneebedeckt"
+    ],
+    "counts": {
+      "ruhiger bergsee umgeben von schneebedeckten bergen und dichten tannenwäldern": 1
+    },
+    "spatial_relations": [],
+    "negative_constraints": [],
+    "must_have": [
+      "ruhiger bergsee umgeben von schneebedeckt"
+    ],
+    "exclude": [],
+    "enhanced_prompt": "Ein ruhiger Bergsee umgeben von schneebedeckten Bergen und dichten Tannenwäldern\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf."
+  },
+  "image_meta": {
+    "provider": "google",
+    "model": "gemini-3.1-flash-image-preview",
+    "size": "1024x1024",
+    "encoding": "data_url",
+    "gateway": "llmapi"
+  },
+  "technical_ok": true,
+  "scoring_ok": false,
+  "scoring_error": "ModuleNotFoundError: No module named 'torch'",
+  "clip_score": 0.0,
+  "clip_threshold": 0.2856234014034271,
+  "clip_q": 0.1,
+  "aesthetic_score": 0.0,
+  "aesthetic_threshold": 6.084645795822144,
+  "aesthetic_r": 0.1,
+  "calibration_window_size": 100,
+  "calibrated_at": "2026-03-04T18:12:17Z",
+  "retries": 0,
+  "approved": false
+}

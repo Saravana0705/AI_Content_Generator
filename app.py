@@ -1,580 +1,1036 @@
+import os
+import csv
+import time
+import base64
+from datetime import datetime
+from pathlib import Path
+
 import streamlit as st
 from dotenv import load_dotenv
-import os
-import csv  
-from datetime import datetime  
-from openai import OpenAI
-from src.sub_agents.text_generator.modules.generator.content_generator import Generator
-from src.sub_agents.text_generator.modules.content_retrieval.llamaindex_retriever import Retriever
-from src.sub_agents.text_generator.modules.optimizer.optimizer import Optimizer
-from langgraph.graph import StateGraph, END
-from dataclasses import dataclass, field
-from streamlit_chat import message
+from typing import List
+from src.main_agent.supervisor import Supervisor
+from src.sub_agents.text_generator.modules.exporter.exporter import Exporter
 
-# --- Page Configuration & CSS ---
-st.set_page_config(page_title="AI Content Generator", page_icon="🧠", layout="wide")
-st.markdown(
-    """
-    <style>
-    /* Import Google Fonts */
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
-    /* General App Styling */
-    [data-testid="stAppViewContainer"] {
-        background-image: linear-gradient(to right top, #d1e4f6, #e1eaf9, #eef1fb, #f8f8fc, #ffffff);
-        font-family: 'Poppins', sans-serif;
-    }
-    
-    /* Sidebar Styling */
-    [data-testid="stSidebar"] {
-        background-color: #f0f2f6;
-    }
-    
-    [data-testid="stSidebar"] > div:first-child {
-        padding-top: 1rem;
-    }
+# ---------------------------
+# Setup
+# ---------------------------
+load_dotenv()
 
-    /* Main Title */
-    h1 {
-        text-align: center;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 700;
-        font-size: 2.8rem;
-        color: #1A2E44;
-        text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
-        padding-top: 0.5rem;
-    }
-
-    /* Landing Page Container - Glassmorphism Effect */
-    .landing-container {
-        padding: 2rem;
-        background: rgba(255, 255, 255, 0.6);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
-        max-width: 900px;
-        margin: 0.5rem auto;
-        text-align: center;
-        animation: fadeIn 1s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-
-    /* Tagline */
-    .tagline {
-        font-family: 'Poppins', sans-serif;
-        font-size: 1.6rem;
-        font-weight: 600;
-        color: #34495e;
-        margin-bottom: 1.5rem;
-    }
-
-    /* Feature Section & Cards */
-    .feature-section {
-        display: flex;
-        justify-content: space-around;
-        gap: 1.5rem;
-        margin: 1.5rem 0;
-    }
-    .feature-card {
-        background: rgba(255, 255, 255, 0.8);
-        padding: 1.25rem;
-        border-radius: 15px;
-        width: 250px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        text-align: center;
-    }
-    .feature-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
-    }
-    .feature-icon {
-        font-size: 2.2rem;
-        margin-bottom: 0.75rem;
-        display: inline-block;
-        line-height: 55px;
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
-        background-color: #eaf2ff;
-    }
-    .feature-card h3 {
-        font-family: 'Poppins', sans-serif;
-        color: #1A2E44;
-        font-size: 1.2rem;
-        margin-bottom: 0.5rem;
-        font-weight: 600;
-    }
-    .feature-card p {
-        font-family: 'Poppins', sans-serif;
-        color: #5a6a7b;
-        font-size: 0.85rem;
-        line-height: 1.5;
-    }
-
-    /* CTA Button */
-    .cta-button {
-        background-color: #000000;
-        color: #ffffff !important;
-        text-decoration: none;
-        padding: 0.9rem 2.5rem;
-        border-radius: 50px;
-        font-family: 'Poppins', sans-serif;
-        font-weight: 600;
-        font-size: 1.1rem;
-        border: none;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        transition: all 0.3s ease;
-        display: inline-block;
-        margin-top: 1rem;
-    }
-    .cta-button:hover {
-        color: #ffffff !important;
-        transform: translateY(-3px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        background-color: #333333;
-    }
-    
-    /* General Button Styling */
-    .stButton>button {
-        border: none;
-        background-color: transparent;
-    }
-    
-    /* Chat Input Styling */
-    .chat-input-container {
-        display: flex;
-        align-items: center;
-        width: 100%;
-    }
-
-    .chat-input-container textarea {
-        flex: 1;
-        border-radius: 10px;
-        padding: 12px;
-        min-height: 60px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-
-    [data-testid="stFormSubmitButton"] {
-        margin: 0 !important;
-    }
-
-    [data-testid="stFormSubmitButton"] button {
-        position: absolute;
-        right: 10px;  
-        top: 10%;  
-        transform: translateY(-150%);  /* centers vertically */
-        border: none;
-        border-radius: 50%;
-        width: 42px;
-        height: 42px;
-        font-size: 18px;
-        font-weight: bold;
-        color: #111111;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background-color: #d1d5db;
-    }
-
-    [data-testid="stFormSubmitButton"] button:hover {
-        background-color: #d3d3d3;
-        color: #111111;
-    }
-
-    /* Responsive Design */
-    @media (max-width: 768px) {
-        .feature-section {
-            flex-direction: column;
-            align-items: center;
-        }
-        .feature-card {
-            width: 80%;
-            max-width: 300px;
-        }
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
+st.set_page_config(
+    page_title="AI Content Generator",
+    layout="wide",
+    initial_sidebar_state="expanded",
 )
 
-# --- Backend Setup ---
-load_dotenv()
-api_key = os.getenv("OPENAI_API_KEY")
+supervisor = Supervisor()
+exporter = Exporter()
 
-if not api_key:
-    st.error("OPENAI_API_KEY not found in .env file. Please add it and restart.")
-    st.stop()
+EXPORT_DIR = "exports"
+os.makedirs(EXPORT_DIR, exist_ok=True)
 
-# --- NEW: CSV Saving Functionality ---
-CSV_FILE = 'sus_scores.csv'
+CSV_FILE = os.path.join(EXPORT_DIR, "sus_scores.csv")
 
+
+# ---------------------------
+# Helpers
+# ---------------------------
 def save_to_csv(score, grade, adjective, responses):
-    """Saves the survey results to a local CSV file."""
     file_exists = os.path.isfile(CSV_FILE)
     header = [
-        'timestamp', 'sus_score', 'grade', 'adjective',
-        'q1_response', 'q2_response', 'q3_response', 'q4_response', 'q5_response',
-        'q6_response', 'q7_response', 'q8_response', 'q9_response', 'q10_response'
+        "timestamp", "sus_score", "grade", "adjective",
+        "q1_response", "q2_response", "q3_response", "q4_response", "q5_response",
+        "q6_response", "q7_response", "q8_response", "q9_response", "q10_response"
     ]
-    data_row = [
-        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        score, grade, adjective, *responses
-    ]
-    with open(CSV_FILE, 'a', newline='', encoding='utf-8') as f:
+    data_row = [datetime.now().strftime("%Y-%m-%d %H:%M:%S"), score, grade, adjective, *responses]
+    with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:
         writer = csv.writer(f)
         if not file_exists:
             writer.writerow(header)
         writer.writerow(data_row)
-# --- END NEW SECTION ---
 
-@dataclass
-class AgentState:
-    input_text: str = ""
-    original_topic: str = ""
-    content_type: str = "blog_article"
-    retrieved_data: str = ""
-    generated_text: str = ""
-    optimized_text: str = ""
-    notes: str = ""
-    score: float = 0.0
-    tone: str = "neutral"
-    keywords: list = field(default_factory=list)
 
-def retrieve_content(state: AgentState) -> AgentState:
-    retriever = Retriever()
-    state.retrieved_data = retriever.retrieve(state.input_text) or "No data retrieved"
-    return state
+def _try_get_image_payload(result: dict):
+    """
+    Supports multiple return formats:
+    - result["image_bytes"] as bytes
+    - result["image_b64"] as base64 string
+    - result["export_paths"]["files"]["image"] as a path to an image file
+    """
+    if not isinstance(result, dict):
+        return None
 
-def generate_content(state: AgentState) -> AgentState:
-    generator = Generator()
-    state.generated_text = generator.generate(state.input_text) or "No content generated"
-    return state
+    img_bytes = result.get("image_bytes")
+    if isinstance(img_bytes, (bytes, bytearray)) and len(img_bytes) > 0:
+        return bytes(img_bytes)
 
-def optimize_content(state: AgentState) -> AgentState:
-    optimizer = Optimizer()
-    state.optimized_text, state.score, state.notes = optimizer.optimize(
-        text=state.generated_text,
-        original_topic=state.original_topic,
-        content_type=state.content_type,
-        tone=state.tone,
-        keywords=state.keywords
-    )
-    return state
+    img_b64 = result.get("image_b64") or result.get("b64") or result.get("image_base64")
+    if isinstance(img_b64, str) and img_b64.strip():
+        try:
+            return base64.b64decode(img_b64)
+        except Exception:
+            pass
 
-workflow = StateGraph(AgentState)
-workflow.add_node("retrieve", retrieve_content)
-workflow.add_node("generate", generate_content)
-workflow.add_node("optimize", optimize_content)
-workflow.set_entry_point("retrieve")
-workflow.add_edge("retrieve", "generate")
-workflow.add_edge("generate", "optimize")
-workflow.add_edge("optimize", END)
-app_graph = workflow.compile()
+    export_paths = result.get("export_paths") or result.get("export_result") or {}
+    files = export_paths.get("files") or {}
+    img_path = files.get("image") or files.get("png") or files.get("jpg")
+    if isinstance(img_path, str) and img_path and os.path.exists(img_path):
+        try:
+            return Path(img_path).read_bytes()
+        except Exception:
+            return None
 
-# --- Sidebar --
+    return None
+
+
+def _img_to_data_uri(path: str):
+    if not path or not os.path.exists(path):
+        return None
+
+    suffix = Path(path).suffix.lower()
+    mime = "image/png"
+    if suffix in [".jpg", ".jpeg"]:
+        mime = "image/jpeg"
+    elif suffix == ".webp":
+        mime = "image/webp"
+
+    with open(path, "rb") as f:
+        encoded = base64.b64encode(f.read()).decode()
+    return f"data:{mime};base64,{encoded}"
+
+
+def _render_meta_caption(meta: dict):
+    if not meta:
+        return
+
+    meta_parts = []
+    if meta.get("content_type"):
+        meta_parts.append(f"Type: {meta['content_type']}")
+    if meta.get("tone"):
+        meta_parts.append(f"Tone: {meta['tone']}")
+    if meta.get("style"):
+        meta_parts.append(f"Style: {meta['style']}")
+    if meta.get("size"):
+        meta_parts.append(f"Size: {meta['size']}")
+    if meta.get("language"):
+        meta_parts.append(f"Language: {meta['language']}")
+    if meta.get("total_time_sec") is not None:
+        meta_parts.append(f"Generated in {meta['total_time_sec']:.2f}s")
+
+    if meta_parts:
+        st.markdown("<div style='height: 0.35rem;'></div>", unsafe_allow_html=True)
+        st.caption(" | ".join(meta_parts))
+
+
+# ---------------------------
+# Global CSS
+# ---------------------------
+st.markdown("""
+<style>
+/* =========================
+   MAIN LAYOUT
+========================= */
+.block-container {
+    padding-top: 0.8rem !important;
+    padding-bottom: 1rem !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+    max-width: 100% !important;
+}
+
+.stApp {
+    background: #F8FAFC;
+}
+
+header[data-testid="stHeader"] {
+    background: transparent !important;
+    height: 2.2rem !important;
+}
+
+[data-testid="stToolbar"] {
+    right: 0.5rem !important;
+    top: 0.2rem !important;
+}
+
+.main .block-container > div:first-child {
+    margin-top: 0 !important;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+[data-testid="stSidebar"] {
+    background: #F1F4F8 !important;
+    border-right: 1px solid #E2E8F0 !important;
+    overflow: visible !important;
+    z-index: 50 !important;
+}
+
+section[data-testid="stSidebar"] {
+    overflow: visible !important;
+}
+
+section[data-testid="stSidebar"] > div {
+    overflow: visible !important;
+}
+
+[data-testid="stSidebar"] > div:first-child {
+    padding-top: 0rem !important;
+    overflow: visible !important;
+}
+
+/* Sidebar inner panel feel */
+[data-testid="stSidebar"] .block-container {
+    padding-top: 0rem !important;
+    padding-bottom: 0.5rem !important;
+    background: #F1F4F8;
+    border-radius: 18px;
+}
+
+/* Sticky Controls heading */
+.sidebar-controls-title {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: #F1F4F8;
+    padding-top: 0.05rem;
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.2rem;
+}
+
+/* Sidebar field spacing */
+[data-testid="stSidebar"] .stSelectbox,
+[data-testid="stSidebar"] .stTextInput,
+[data-testid="stSidebar"] .stTextArea {
+    margin-bottom: 0.6rem !important;
+}
+
+/* Sidebar labels */
+[data-testid="stSidebar"] label {
+    margin-bottom: 0.15rem !important;
+    font-size: 0.93rem !important;
+    font-weight: 600 !important;
+    color: #334155 !important;
+}
+
+/* Sidebar control sizing */
+[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div,
+[data-testid="stSidebar"] .stTextInput input {
+    min-height: 2.7rem !important;
+    border-radius: 12px !important;
+}
+
+/* Sidebar text sizing */
+[data-testid="stSidebar"] .stSelectbox span,
+[data-testid="stSidebar"] input {
+    font-size: 0.95rem !important;
+}
+
+/* Premium hover for sidebar controls */
+[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div,
+[data-testid="stSidebar"] .stTextInput input,
+[data-testid="stSidebar"] .stTextArea textarea {
+    transition: all 0.18s ease !important;
+    border: 1px solid #D8E0EA !important;
+    background: #FFFFFF !important;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+}
+
+[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div:hover,
+[data-testid="stSidebar"] .stTextInput input:hover,
+[data-testid="stSidebar"] .stTextArea textarea:hover {
+    border-color: #C5D4E6 !important;
+    box-shadow: 0 3px 10px rgba(15,23,42,0.06) !important;
+    transform: translateY(-1px);
+}
+
+[data-testid="stSidebar"] .stSelectbox div[data-baseweb="select"] > div:focus-within,
+[data-testid="stSidebar"] input:focus,
+[data-testid="stSidebar"] textarea:focus {
+    border-color: #9DBCE3 !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.10) !important;
+}
+
+/* =========================
+   TYPOGRAPHY
+========================= */
+h1, h2, h3 {
+    margin-top: 0 !important;
+    margin-bottom: 0.3rem !important;
+    color: #1E293B !important;
+}
+
+label,
+.stSelectbox label,
+.stTextInput label,
+.stTextArea label {
+    font-weight: 600 !important;
+    color: #334155 !important;
+}
+
+/* =========================
+   INPUTS & BUTTONS
+========================= */
+.stTextArea textarea,
+.stTextInput input,
+.stSelectbox div[data-baseweb="select"] > div {
+    border-radius: 12px !important;
+}
+
+.stButton > button,
+.stFormSubmitButton > button {
+    border-radius: 12px !important;
+    border: 1px solid #D8E0EA !important;
+    padding: 0.5rem 1rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    transition: all 0.16s ease !important;
+}
+            
+/* Secondary buttons */
+.stButton > button {
+    background: #FFFFFF !important;
+    color: #1E293B !important;
+    border: 1px solid #D8E0EA !important;
+}
+
+/* Primary form submit button */
+.stFormSubmitButton > button {
+    background: #2563EB !important;
+    color: #FFFFFF !important;
+    border: 1px solid #2563EB !important;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.22) !important;
+}
+
+.stButton > button:hover,
+.stFormSubmitButton > button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.stFormSubmitButton > button:hover {
+    background: #1D4ED8 !important;
+    border-color: #1D4ED8 !important;
+    box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28) !important;
+}
+
+/* =========================
+   HEADER
+========================= */
+.header-divider {
+    height: 1px;
+    background: linear-gradient(to right, #E5EAF0, transparent);
+    margin: 0.55rem 0 1rem 0;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty-state {
+    background: #FFFFFF;
+    border: 1px solid #E8EDF3;
+    border-radius: 16px;
+    padding: 1.2rem 1rem;
+    text-align: center;
+    box-shadow: 0 4px 214px rgba(15, 23, 42, 0.04);
+    margin: 0.7rem 0 1rem 0;
+}
+
+.empty-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #1E293B;
+    margin-bottom: 0.2rem;
+}
+
+.empty-subtitle {
+    font-size: 0.9rem;
+    color: #64748B;
+}
+
+/* =========================
+   COMPOSER
+========================= */
+.sticky-composer {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    background: linear-gradient(to top, #F8FAFC 70%, rgba(248,250,252,0));
+    padding-top: 1rem;
+    padding-bottom: 0.35rem;
+}
+
+.composer-wrap {
+    background: #FFFFFF;
+    border: 1px solid #E5EAF0;
+    border-radius: 18px;
+    padding: 0.35rem 0.35rem 0.15rem 0.35rem;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+    margin-top: 0.35rem;
+}
+
+/* =========================
+   CHAT UI
+========================= */
+[data-testid="stChatMessageAvatar"] img {
+    width: 34px !important;
+    height: 34px !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    border: 1px solid #E2E8F0 !important;
+}
+
+[data-testid="stChatMessage"] {
+    border-radius: 18px;
+    padding: 0.85rem 1rem !important;
+    margin-bottom: 0.9rem !important;
+    background: #F8FAFC;
+    border: 1px solid #EDF2F7;
+    box-shadow: none;
+    transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+}
+
+[data-testid="stChatMessage"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
+}
+
+.chat-user-wrap [data-testid="stChatMessage"] {
+    background: #EEF4FF !important;
+    border: 1px solid #D8E7FF !important;
+}
+
+.chat-assistant-wrap [data-testid="stChatMessage"] {
+    background: #F7F8FA !important;
+    border: 1px solid #ECEFF3 !important;
+}
+
+[data-testid="stChatMessageContent"] p,
+[data-testid="stChatMessageContent"] li {
+    margin: 0 0 0.05rem 0 !important;
+    line-height: 1.24 !important;
+    font-size: 0.97rem !important;
+    color: #1F2937 !important;
+    word-break: break-word !important;
+}
+
+[data-testid="stChatMessageContent"] h1 {
+    font-size: 1.2rem !important;
+    line-height: 1.18 !important;
+    margin-top: 0.15rem !important;
+    margin-bottom: 0.2rem !important;
+    font-weight: 700 !important;
+    color: #1E293B !important;
+}
+
+[data-testid="stChatMessageContent"] h2 {
+    font-size: 1.05rem !important;
+    line-height: 1.18 !important;
+    margin-top: 0.22rem !important;
+    margin-bottom: 0.12rem !important;
+    font-weight: 700 !important;
+    color: #1E293B !important;
+}
+
+[data-testid="stChatMessageContent"] h3 {
+    font-size: 1rem !important;
+    line-height: 1.18 !important;
+    margin-top: 0.2rem !important;
+    margin-bottom: 0.1rem !important;
+    font-weight: 700 !important;
+    color: #1E293B !important;
+}
+
+[data-testid="stChatMessageContent"] code {
+    font-family: inherit !important;
+    font-size: inherit !important;
+    background: transparent !important;
+    color: inherit !important;
+    padding: 0 !important;
+}
+
+[data-testid="stChatMessageContent"] pre {
+    background: #F8FAFC !important;
+    border-radius: 10px !important;
+    padding: 0.75rem !important;
+    border: 1px solid #E5EAF0 !important;
+}
+
+[data-testid="stMarkdownContainer"] > * {
+    margin-bottom: 0.08rem !important;
+}
+
+/* =========================
+   CAPTIONS / MEDIA
+========================= */
+[data-testid="stCaptionContainer"] {
+    color: #64748B !important;
+}
+
+[data-testid="stImage"] img {
+    border-radius: 16px;
+}
+
+/* =========================
+   UTILITIES
+========================= */
+h1 a, h2 a, h3 a {
+    display: none !important;
+}
+
+hr {
+    margin: 0.8rem 0 !important;
+    border-color: #E5EAF0 !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------------------
+# Session State
+# ---------------------------
+if "history" not in st.session_state:
+    st.session_state.history = []
+
+if "last_result" not in st.session_state:
+    st.session_state.last_result = None
+
+if "show_sus_form" not in st.session_state:
+    st.session_state.show_sus_form = False
+
+
+# ---------------------------
+# Model Options (UI)
+# ---------------------------
+TEXT_MODEL_OPTIONS = {
+    "OpenAI GPT-4o": ("openai", "gpt-4o"),
+    "Google Gemini Pro (Coming soon)": ("google", "gemini-pro"),
+}
+
+IMAGE_MODEL_OPTIONS = {
+    "OpenAI GPT Image 1 Mini": ("openai", "gpt-image-1-mini"),
+    "Gemini Flash (Coming soon)": ("google", "gemini-flash"),
+}
+
+DISPLAY_MODEL_NAMES = {
+    "gpt-4o": "OpenAI GPT-4o",
+    "gemini-pro": "Google Gemini Pro",
+    "gpt-image-1-mini": "OpenAI GPT Image 1 Mini",
+    "gemini-flash": "Google Gemini Flash",
+}
+
+_default_provider = (os.getenv("LLM_PROVIDER") or "openai").strip().lower()
+_default_model_openai = os.getenv("OPENAI_MODEL", "gpt-4o")
+_default_model_groq = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+_default_image_model = os.getenv("IMAGE_MODEL", "gpt-image-1-mini")
+
+
+def _default_choice_key(model_options, provider=None, model=None):
+    if provider and model:
+        for k, (p, m) in model_options.items():
+            if p == provider and m == model:
+                return k
+
+    if provider:
+        for k, (p, _) in model_options.items():
+            if p == provider:
+                return k
+
+    if model:
+        for k, (_, m) in model_options.items():
+            if m == model:
+                return k
+
+    return list(model_options.keys())[0]
+
+
+# ---------------------------
+# Paths
+# ---------------------------
+APP_ICON_PATH = "assets/ai-content-generator-icon.png"
+
+USER_AVATAR_PATH = "assets/user-icon.png"
+BOT_AVATAR_PATH = "assets/bot-icon.png"
+
+user_avatar = USER_AVATAR_PATH if os.path.exists(USER_AVATAR_PATH) else "🧑"
+bot_avatar = BOT_AVATAR_PATH if os.path.exists(BOT_AVATAR_PATH) else "🤖"
+app_icon_data_uri = _img_to_data_uri(APP_ICON_PATH)
+
+
+# ---------------------------
+# Sidebar Controls
+# ---------------------------
 with st.sidebar:
-    st.title("💡 Content Controls")
-
-    CONTENT_CATEGORY_MAPPING = {"Text": "text", "Images": "images", "Videos": "videos"}
-    category_options = list(CONTENT_CATEGORY_MAPPING.keys())
-    category_index = st.session_state.get('category_index', None)
-    user_friendly_content_category = st.selectbox(
-        "Content Category",
-        options=category_options,
-        placeholder="Select a category...",
-        index=category_index
+    st.markdown(
+        "<div class='sidebar-controls-title' style='font-size:1.32rem; font-weight:700; color:#1E293B;'>⚙️ Controls</div>",
+        unsafe_allow_html=True
     )
 
-    # Initialize dependent variables
-    user_friendly_content_type = None
-    tone = None
-    keywords_input = ""
-    content_type_options = []
-    tone_options = []
+    st.markdown("<div style='font-size:0.76rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.04em; margin:0.2rem 0 0.3rem 0;'>Generation</div>", unsafe_allow_html=True)
 
-    if user_friendly_content_category == "Text":
-        CONTENT_TYPE_MAPPING = {
-            "Blog Article": "blog_article", "News Article": "news_article", "Email Copy": "email_copy",
-            "LinkedIn & Facebook Post": "social_post", "TikTok Caption": "short_form_social",
-            "YouTube Video Description": "video_description", "Twitter Tweet": "tweet",
-            "Webinar Script": "script", "Podcast Transcript": "script", "FAQ Section": "faq_section"
-        }
-        content_type_options = list(CONTENT_TYPE_MAPPING.keys())
-        content_type_index = st.session_state.get('content_type_index', None)
-        user_friendly_content_type = st.selectbox(
-            "Select Content Type",
-            options=content_type_options,
-            placeholder="Select a type...",
-            index=content_type_index
+    mode = st.selectbox(
+        "Generator Mode",
+        options=["Text Generator", "Image Generator"],
+        index=0,
+    )
+    subagent_type = "text_generator" if mode == "Text Generator" else "image_generator"
+
+    model_group_gap = "<div style='height:0.1rem;'></div>"
+
+    st.markdown(model_group_gap, unsafe_allow_html=True)
+    model_choice = None
+
+    if subagent_type == "text_generator":
+        current_model_options = TEXT_MODEL_OPTIONS
+
+        default_text_model = (
+            _default_model_openai if _default_provider == "openai"
+            else _default_model_groq if _default_provider == "groq"
+            else _default_model_openai
         )
 
-        tone_options = ["neutral", "formal", "informal", "positive", "persuasive"]
-        tone_index = st.session_state.get('tone_index', None)
-        tone = st.selectbox(
-            "Select Tone",
-            options=tone_options,
-            placeholder="Select a tone...",
-            index=tone_index
-        )
-
-        keywords_input = st.text_input("SEO Keywords (comma-separated)", value=st.session_state.get('keywords_str', ''))
-
-    elif user_friendly_content_category in ["Images", "Videos"]:
-        st.info(f"{user_friendly_content_category} generation is coming soon!")
-
-# --- Main Page ---
-st.title("AI Content Generator 🧠")
-
-# Initialize page state for navigation
-if 'page' not in st.session_state:
-    st.session_state.page = 'chat'
-
-# --- Page Navigation Logic ---
-if st.session_state.page == 'survey':
-    # Survey Page
-    st.markdown("""
-        <style>
-        [data-testid="stAppViewContainer"] {
-            background: #ffffff !important;
-            background-image: none !important;
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-    st.subheader("🔍 System Usability Scale (SUS) Survey")
-    st.info("Rate your experience with this AI Content Generator. Answer all 10 questions (1=Strongly Disagree, 5=Strongly Agree). Takes ~2 minutes!")
-
-    # Collect responses
-    responses = []
-    for i, q in enumerate([
-        "I think that I would like to use this system frequently.",
-        "I found the system unnecessarily complex.",
-        "I thought the system was easy to use.",
-        "I think that I would need the support of a technical person to be able to use this system.",
-        "I found the various functions in this system were well integrated.",
-        "I thought there was too much inconsistency in this system.",
-        "I would imagine that most people would learn to use this system very quickly.",
-        "I found the system very cumbersome to use.",
-        "I felt very confident using the system.",
-        "I needed to learn a lot of things before I could get going with this system."
-    ], 1):
-        st.markdown(f"{i}. {q}")
-        response = st.radio(
-            label=f"Response for question {i}",
-            options=[1, 2, 3, 4, 5],
-            index=None,
-            key=f"sus_{i}",
-            horizontal=True,
-            label_visibility="collapsed",
-            help="1=Strongly Disagree | 5=Strongly Agree"
-        )
-        responses.append(response)
-
-    # Create two columns for buttons
-    col1, col2 = st.columns([1, 1])
-
-    with col1:
-        # Back to Chat button
-        if st.button("⬅ Back to Chat", key="back_to_chat"):
-            st.session_state.page = 'chat'
-            st.rerun()
-
-    with col2:
-        # Submit Survey button
-        submitted = st.button("Submit Survey", key="submit_sus")
-
-    if submitted:
-        if None in responses:
-            st.error("Please answer all 10 questions before submitting.")
-        else:
-            # Compute SUS Score
-            contributions = []
-            for i, resp in enumerate(responses, 1):
-                if i % 2 == 1:  # Odd questions
-                    contributions.append(resp - 1)
-                else:  # Even questions
-                    contributions.append(5 - resp)
-            total = sum(contributions) * 2.5
-            sus_score = round(total, 1)
-
-            # Grade + Adjective
-            if sus_score >= 80.3: grade, adjective = "A", "Best Imaginable"
-            elif sus_score >= 68: grade, adjective = "B", "Excellent"
-            elif sus_score >= 60.7: grade, adjective = "C", "Good"
-            elif sus_score >= 52.1: grade, adjective = "D", "OK"
-            else: grade, adjective = "F", "Poor"
-
-            # Display Results
-            st.success(f"*Your SUS Score: {sus_score}/100* (Grade: {grade} | Adjective: {adjective})")
-
-            # --- MODIFIED: Call the save function ---
-            save_to_csv(sus_score, grade, adjective, responses)
-            # --- END MODIFICATION ---
-
-            # Store in session
-            if 'sus_scores' not in st.session_state:
-                st.session_state.sus_scores = []
-            st.session_state.sus_scores.append(sus_score)
-            if len(st.session_state.sus_scores) > 0:
-                avg_score = sum(st.session_state.sus_scores) / len(st.session_state.sus_scores)
-                #st.metric("Your Average SUS Score (this session)", f"{avg_score:.1f}/100")
-
-    # ---FIXED CSS FOR BUTTONS ---
-    st.markdown("""
-        <style>
-        /* Target the "Submit Survey" button (in the second column) */
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button {
-            background-color: #000000 !important;
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 1rem 2.8rem;
-            border-radius: 50px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 1.2rem;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(2) button:hover {
-            background-color: #333333 !important;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-        /* Target the "Back to Chat" button (in the first column) */
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button {
-            background-color: #d1d5db !important;
-            color: #111111 !important;
-            text-decoration: none;
-            padding: 1rem 2.8rem;
-            border-radius: 50px;
-            font-family: 'Poppins', sans-serif;
-            font-weight: 600;
-            font-size: 1.2rem;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-            width: 100%;
-        }
-        div[data-testid="stHorizontalBlock"] > div:nth-child(1) button:hover {
-            background-color: #b0b7c3 !important;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-        }
-        </style>
-    """, unsafe_allow_html=True)
-
-else:
-    # Landing or Chat Page
-    if not user_friendly_content_category or user_friendly_content_category != "Text":
-        # Landing Page
-        st.markdown(
-            """
-            <div class="landing-container">
-                <h2 class="tagline">Empower Your Content with AI Precision</h2>
-                <div class="feature-section">
-                    <div class="feature-card">
-                        <h3>📥 Smart Retrieval</h3>
-                        <p>Fetch relevant data to enrich your content effortlessly.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>✍ AI Generation</h3>
-                        <p>Create high-quality text tailored to your needs.</p>
-                    </div>
-                    <div class="feature-card">
-                        <h3>⚡ Optimization</h3>
-                        <p>Enhance readability, SEO, and engagement.</p>
-                    </div>
-                </div>
-                <a href="#" class="cta-button" onclick="document.querySelector('[data-testid=sidebar]').style.display='block'; return false;">Get Started</a>
-            </div>
-            """,
-            unsafe_allow_html=True
+        default_key = _default_choice_key(
+            current_model_options,
+            provider=_default_provider,
+            model=default_text_model,
         )
     else:
-        # Chat Page
-        st.markdown("""
-            <style>
-            [data-testid="stAppViewContainer"] {
-                background: #ffffff !important;
-                background-image: none !important;
+        current_model_options = IMAGE_MODEL_OPTIONS
+        default_key = _default_choice_key(
+            current_model_options,
+            provider=_default_provider,
+            model=_default_image_model,
+        )
+
+    default_index = list(current_model_options.keys()).index(default_key)
+
+    model_choice = st.selectbox(
+        "Model",
+        options=list(current_model_options.keys()),
+        index=default_index,
+    )
+
+    selected_provider, selected_model = current_model_options[model_choice]
+    display_model_name = DISPLAY_MODEL_NAMES.get(selected_model, model_choice)
+
+    user_friendly_content_type = None
+    keywords_input = ""
+
+    if subagent_type == "text_generator":
+        st.markdown("<div style='font-size:0.76rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.04em; margin:0.35rem 0 0.3rem 0;'>Content settings</div>", unsafe_allow_html=True)
+
+        user_friendly_content_type = st.selectbox(
+            "Content Type",
+            options=[
+                "Blog Article",
+                "News Article",
+                "Email Copy",
+                "LinkedIn & Facebook Post",
+                "TikTok Caption",
+                "YouTube Video Description",
+                "Twitter Tweet",
+                "Webinar Script",
+                "Podcast Transcript",
+                "FAQ Section",
+            ],
+            index=0,
+        )
+
+        tone = st.selectbox(
+            "Tone",
+            options=["Neutral", "Friendly", "Professional", "Persuasive", "Casual"],
+            index=0,
+        )
+
+        st.markdown("<div style='height:0.05rem;'></div>", unsafe_allow_html=True)
+        text_language = st.selectbox(
+            "Language",
+            options=["English", "German"],
+            index=0,
+        )
+
+        keywords_input = st.text_input("Keywords (comma-separated)", value="")
+
+        text_language_code = "de" if text_language == "German" else "en"
+
+        image_style = None
+        image_size = None
+        image_language = None
+        image_language_code = "en"
+
+    else:
+        st.markdown("<div style='font-size:0.76rem; font-weight:700; color:#94A3B8; text-transform:uppercase; letter-spacing:0.04em; margin:0.35rem 0 0.3rem 0;'>Visual settings</div>", unsafe_allow_html=True)
+
+        image_style = st.selectbox(
+            "Style",
+            options=["Photorealistic", "Anime", "3D", "Illustration"],
+            index=0,
+        )
+
+        image_size = st.selectbox(
+            "Size",
+            options=["1024x1024", "1024x1536", "1536x1024"],
+            index=0,
+        )
+
+        image_language = st.selectbox(
+            "Language",
+            options=["English", "German"],
+            index=0,
+        )
+
+        image_language_code = "de" if image_language == "German" else "en"
+
+        tone = image_style
+        user_friendly_content_type = "Image"
+        keywords_input = ""
+
+
+# ---------------------------
+# Main Header
+# ---------------------------
+friendly_mode = "Text Generator" if mode == "Text Generator" else "Image Generator"
+subtitle_text = "Create polished text and visuals with AI assistance"
+
+icon_html = ""
+if app_icon_data_uri:
+    icon_html = f'<img src="{app_icon_data_uri}" style="width:48px; height:48px; object-fit:contain; margin-top:2px;" />'
+
+header_html = f"""
+<div style="display:flex; align-items:flex-start; gap:12px; margin-bottom:0.45rem;">
+{icon_html}
+<div style="display:flex; flex-direction:column; justify-content:flex-start;">
+<div style="font-size:2.08rem; font-weight:800; color:#1E293B; line-height:1.08; margin:0;">
+AI Content Generator
+</div>
+<div style="font-size:0.94rem; color:#64748B; margin-top:0.10rem;">
+{subtitle_text}
+</div>
+<div style="font-size:0.88rem; color:#94A3B8; margin-top:0.24rem;">
+Mode: {friendly_mode} | Model: {display_model_name}
+</div>
+</div>
+</div>
+<div class="header-divider"></div>
+"""
+
+st.markdown(header_html, unsafe_allow_html=True)
+
+# ---------------------------
+# Conversation History
+# ---------------------------
+if not st.session_state.history:
+    st.markdown("""
+    <div class="empty-state">
+        <div class="empty-title">Start creating</div>
+        <div class="empty-subtitle">
+            Generate articles or images from a simple prompt.
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+for i, chat in enumerate(st.session_state.history):
+    st.markdown('<div class="chat-user-wrap">', unsafe_allow_html=True)
+    with st.chat_message("user", avatar=user_avatar):
+        st.markdown(
+            "<div style='font-size:0.78rem; font-weight:700; color:#2563EB; margin-bottom:0.18rem;'>You</div>",
+            unsafe_allow_html=True
+        )
+        st.markdown(chat.get("prompt", ""))
+        st.markdown("<div style='height:0.4rem;'></div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    if chat.get("type") == "image":
+        st.markdown('<div class="chat-assistant-wrap">', unsafe_allow_html=True)
+        with st.chat_message("assistant", avatar=bot_avatar):
+            st.markdown(
+                "<div style='font-size:0.78rem; font-weight:700; color:#475569; margin-bottom:0.18rem;'>Assistant</div>",
+                unsafe_allow_html=True
+            )
+            st.markdown(chat.get("response_text", "Image generated."))
+            img_payload = chat.get("image_bytes")
+            if isinstance(img_payload, (bytes, bytearray)) and len(img_payload) > 0:
+                st.markdown("<div style='height: 0.35rem;'></div>", unsafe_allow_html=True)
+                st.image(img_payload, use_container_width=True)
+            _render_meta_caption(chat.get("meta", {}))
+        st.markdown('</div>', unsafe_allow_html=True)
+    else:
+        st.markdown('<div class="chat-assistant-wrap">', unsafe_allow_html=True)
+        with st.chat_message("assistant", avatar=bot_avatar):
+            st.markdown(
+                "<div style='font-size:0.78rem; font-weight:700; color:#475569; margin-bottom:0.18rem;'>Assistant</div>",
+                unsafe_allow_html=True
+            )
+            st.markdown(chat.get("response", ""))
+            _render_meta_caption(chat.get("meta", {}))
+        st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------------------------
+# Composer / Input Form
+# ---------------------------
+st.markdown('<div class="sticky-composer">', unsafe_allow_html=True)
+st.markdown(
+    "<div style='font-size:1.15rem; font-weight:700; color:#1E293B; margin:0.45rem 0 0.55rem 0;'>What would you like to create?</div>",
+    unsafe_allow_html=True
+)
+st.markdown('<div class="composer-wrap">', unsafe_allow_html=True)
+
+with st.form("prompt_form", clear_on_submit=True):
+    user_input = st.text_area(
+        "Enter your prompt",
+        height=110,
+        placeholder="Describe the content or image you want to generate..."
+    )
+    submit_pressed = st.form_submit_button("Generate", type = "primary")
+
+st.markdown('</div>', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# ---------------------------
+# Generation Handling
+# ---------------------------
+if submit_pressed and user_input:
+    if subagent_type == "text_generator":
+        os.environ["TEXT_PROVIDER"] = selected_provider
+
+        if selected_provider == "openai":
+            os.environ["OPENAI_TEXT_MODEL"] = selected_model
+        elif selected_provider == "groq":
+            os.environ["GROQ_TEXT_MODEL"] = selected_model
+    else:
+        os.environ["IMAGE_PROVIDER"] = selected_provider
+
+        if selected_provider == "openai":
+            os.environ["OPENAI_IMAGE_MODEL"] = selected_model
+        elif selected_provider == "stability":
+            os.environ["STABILITY_IMAGE_MODEL"] = selected_model
+        elif selected_provider == "freepik":
+            os.environ["FREEPIK_IMAGE_MODEL"] = selected_model
+
+    if selected_provider == "openai":
+        os.environ["OPENAI_MODEL"] = selected_model
+    elif selected_provider == "groq":
+        os.environ["GROQ_MODEL"] = selected_model
+
+    with st.spinner("Generating... Please wait"):
+        if subagent_type == "text_generator":
+            CONTENT_TYPE_MAPPING = {
+                "Blog Article": "blog_article",
+                "News Article": "news_article",
+                "Email Copy": "email_copy",
+                "LinkedIn & Facebook Post": "social_post",
+                "TikTok Caption": "short_form_social",
+                "YouTube Video Description": "video_description",
+                "Twitter Tweet": "tweet",
+                "Webinar Script": "script",
+                "Podcast Transcript": "script",
+                "FAQ Section": "faq_section",
             }
-            </style>
-        """, unsafe_allow_html=True)
 
-        # Session State Init
-        if 'history' not in st.session_state:
-            st.session_state.history = [{
-                "prompt": "Hi!",
-                "response": "Hello! What content can I create for you today?"
-            }]
-        if 'sus_scores' not in st.session_state:
-            st.session_state.sus_scores = []
+            content_type_key = CONTENT_TYPE_MAPPING[user_friendly_content_type]
+            keywords_list = [k.strip() for k in keywords_input.split(",")] if keywords_input else []
 
-        # Display Chat History
-        for chat in st.session_state.history:
-            message(chat['prompt'], is_user=True, key=f"user_{st.session_state.history.index(chat)}")
-            message(chat['response'], key=f"ai_{st.session_state.history.index(chat)}", allow_html=True)
-
-        # User Input Form & Processing Logic
-        with st.form(key="prompt_form", clear_on_submit=True):
-            st.markdown('<div class="chat-input-container">', unsafe_allow_html=True)
-            user_input = st.text_area(
-                label="prompt_input",
-                label_visibility="collapsed",
-                placeholder="Type your topic or prompt here...",
-                height=150,
-                key="prompt_input"
+            t0 = time.perf_counter()
+            result = supervisor.coordinate_workflow(
+                user_input,
+                subagent_type="text_generator",
+                content_type=content_type_key,
+                tone=tone,
+                keywords=keywords_list,
+                model_name=selected_model,
+                language=text_language_code,
             )
-            submit_pressed = st.form_submit_button("▶", help="Send")
-            st.markdown('</div>', unsafe_allow_html=True)
+            total_time_sec = time.perf_counter() - t0
 
-            if submit_pressed and user_input:
-                if not user_friendly_content_type or not tone:
-                    st.warning("⚠ Please make a selection for Content Type and Tone in the sidebar.")
-                else:
-                    with st.spinner("🤖 Agent is thinking..."):
-                        content_type_key = CONTENT_TYPE_MAPPING[user_friendly_content_type]
-                        detailed_prompt = (
-                            f"You are an expert content writer. Create content about: '{user_input}'.\n"
-                            f"The content type must be a '{user_friendly_content_type}'.\n"
-                            "Follow all structural and stylistic rules appropriate for this content type."
-                        )
-                        keywords_list = [k.strip() for k in keywords_input.split(',')] if keywords_input else []
-                        initial_state = AgentState(
-                            input_text=detailed_prompt, original_topic=user_input, content_type=content_type_key,
-                            tone=tone, keywords=keywords_list
-                        )
-                        result = app_graph.invoke(initial_state)
-                        ai_response = (
-                            f"### ✨ Optimized & Final Content\n"
-                            f"{result.get('optimized_text', 'Not available.')}\n\n"
-                            f"{result.get('notes', 'N/A')}"
-                        )
-                        st.session_state.history.append({
-                            "prompt": user_input, "response": ai_response
-                        })
-                        st.rerun()
+            st.session_state.last_result = {**(result or {}), "subagent_type": "text_generator"}
 
-        # Example Prompt
-        if len(st.session_state.history) == 1:
-            st.caption(
-                "*Example Prompt:* Create a detailed blog post about the benefits of AI in healthcare, written in a positive tone, targeting a general audience. "
-                "Include SEO keywords: AI healthcare, machine learning diagnostics, telemedicine. "
-                "Add a brief introduction, 3 key benefits with examples, and a conclusion encouraging further exploration."
-            )
+            final_text = result.get("optimized_text") or result.get("final_text") or "Not available."
 
-        st.markdown("---")
-        if st.button("📊 Take Usability Survey (SUS)", help="Rate the app's usability"):
-            st.session_state.page = 'survey'
+            st.session_state.history.append({
+                "prompt": user_input,
+                "response": final_text,
+                "type": "text",
+                "meta": {
+                    "content_type": user_friendly_content_type,
+                    "tone": tone,
+                    "language": text_language,
+                    "total_time_sec": total_time_sec,
+                }
+            })
             st.rerun()
+
+        else:
+            t0 = time.perf_counter()
+            result = supervisor.coordinate_workflow(
+                user_input,
+                subagent_type="image_generator",
+                content_type="image",
+                tone=image_style,
+                keywords=[],
+                model_name=selected_model,
+                image_size=image_size,
+                language=image_language_code,
+            )
+            total_time_sec = time.perf_counter() - t0
+
+            st.session_state.last_result = {**(result or {}), "subagent_type": "image_generator"}
+
+            img_bytes = _try_get_image_payload(result or {})
+            if not img_bytes:
+                st.session_state.history.append({
+                    "prompt": user_input,
+                    "response": "Image generation failed (no image payload returned).",
+                    "type": "text",
+                    "meta": {
+                        "content_type": "Image",
+                        "tone": image_style,
+                        "language": image_language,
+                        "total_time_sec": total_time_sec,
+                    }
+                })
+            else:
+                st.session_state.history.append({
+                    "prompt": user_input,
+                    "response_text": "Image generated.",
+                    "type": "image",
+                    "image_bytes": img_bytes,
+                    "meta": {
+                        "style": image_style,
+                        "size": image_size,
+                        "language": image_language,
+                        "total_time_sec": total_time_sec,
+                    }
+                })
+            st.rerun()
+
+# ---------------------------
+# Publish UI (Text only)
+# ---------------------------
+last = st.session_state.last_result or {}
+last_type = (last.get("subagent_type") or "text_generator").strip().lower()
+
+review = (last.get("review_result") or last.get("review") or {})
+approved = bool(review.get("approved", False))
+
+if last_type == "text_generator" and approved:
+    with st.expander("📤 Publish options", expanded=False):
+        platform = st.selectbox(
+            "Platform to publish",
+            options=[
+                "DEV.to",
+                "Medium (Coming soon)",
+                "LinkedIn (Coming soon)",
+            ],
+            index=0,
+            key="publish_platform_select",
+        )
+
+        colA, colB = st.columns([1, 4])
+
+        with colA:
+            publish_clicked = st.button("Publish now", type="primary")
+
+        if publish_clicked:
+            export_result = last.get("export_result", {}) or last.get("export_paths", {}) or {}
+            files = export_result.get("files", {}) or {}
+            md_path = files.get("md")
+
+            if not md_path or not os.path.exists(md_path):
+                st.error("Could not find exported Markdown file to publish. (MD path missing)")
+            else:
+                with open(md_path, "r", encoding="utf-8") as f:
+                    body_md = f.read()
+
+                title = "Generated Article"
+                for line in body_md.splitlines():
+                    if line.strip().startswith("# "):
+                        title = line.strip().lstrip("#").strip()
+                        break
+                if title == "Generated Article":
+                    title = (last.get("original_topic") or "").strip() or "Generated Article"
+
+                default_pub = os.getenv("DEVTO_DEFAULT_PUBLISHED", "false").strip().lower() in ("1", "true", "yes")
+                published_flag = default_pub
+
+                tags = []
+                if "keywords_list" in locals():
+                    tags = keywords_list[:5]
+
+                pub_res = exporter.publish_to_devto(
+                    title=title,
+                    body_markdown=body_md,
+                    published=published_flag,
+                    tags=tags,
+                )
+
+                if pub_res.get("ok"):
+                    st.success("Published successfully to DEV.to.")
+                else:
+                    st.error(f"DEV.to publish failed: {pub_res.get('message')}")
+                    details = pub_res.get("details")
+                    if details:
+                        st.code(details)
+
+# ---------------------------
+# SUS Survey
+# ---------------------------
+with st.expander("📝 Usability survey", expanded=False):
+    st.caption("Evaluate usability of the system after testing the interface.")
+
+    if st.button("Start survey"):
+        st.session_state.show_sus_form = True
+
+    if st.session_state.show_sus_form:
+        st.markdown(
+            "<div style='font-size:1.2rem; font-weight:700; color:#1E293B; margin:0.4rem 0 0.25rem 0;'>System Usability Scale (SUS) Survey</div>",
+            unsafe_allow_html=True
+        )
+        st.caption("Rate each statement from 1 to 5, where 1 = Strongly Disagree and 5 = Strongly Agree.")
+
+        questions = [
+            "I think that I would like to use this system frequently.",
+            "I found the system unnecessarily complex.",
+            "I thought the system was easy to use.",
+            "I think that I would need the support of a technical person to be able to use this system.",
+            "I found the various functions in this system were well integrated.",
+            "I thought there was too much inconsistency in this system.",
+            "I would imagine that most people would learn to use this system very quickly.",
+            "I found the system very cumbersome to use.",
+            "I felt very confident using the system.",
+            "I needed to learn a lot of things before I could get going with this system.",
+        ]
+
+        responses = []
+        for i, q in enumerate(questions, start=1):
+            resp = st.radio(
+                f"Q{i}. {q}",
+                options=[1, 2, 3, 4, 5],
+                index=2,
+                horizontal=True,
+                key=f"sus_q{i}",
+            )
+            responses.append(resp)
+
+        if st.button("Submit survey", type="primary"):
+            odd = [responses[i] - 1 for i in range(0, 10, 2)]
+            even = [5 - responses[i] for i in range(1, 10, 2)]
+            sus_score = (sum(odd) + sum(even)) * 2.5
+
+            if sus_score >= 80:
+                grade = "A"
+                adjective = "Excellent"
+            elif sus_score >= 70:
+                grade = "B"
+                adjective = "Good"
+            elif sus_score >= 60:
+                grade = "C"
+                adjective = "OK"
+            elif sus_score >= 50:
+                grade = "D"
+                adjective = "Poor"
+            else:
+                grade = "F"
+                adjective = "Awful"
+
+            save_to_csv(sus_score, grade, adjective, responses)
+            st.success(f"Thanks! SUS Score = {sus_score:.1f} ({grade} / {adjective})")
+            st.session_state.show_sus_form = False

@@ -1,0 +1,33 @@
+{
+  "run_id": "561228f85455",
+  "timestamp_utc": "2026-03-05 15:27:06",
+  "provider": "openai",
+  "model": "gpt-image-1-mini",
+  "raw_prompt": "A busy night market street in Tokyo with neon lights, food stalls, and umbrellas in the rain",
+  "style": "3",
+  "size": "1024x1024",
+  "final_prompt": "A busy night market street in Tokyo with neon lights, food stalls, and umbrellas in the rain\n3",
+  "retries": 0,
+  "latency_sec": 45.95469979999871,
+  "calibration_path": "calibration/image_thresholds.json",
+  "thresholds": {
+    "clip_threshold": 0.2856234014034271,
+    "clip_q": 0.1,
+    "aesthetic_threshold": 6.084645795822144,
+    "aesthetic_r": 0.1
+  },
+  "scores": {
+    "ok": true,
+    "clip_score": 0.3164618909358978,
+    "aesthetic_score": 6.950580596923828,
+    "openclip_model": "ViT-B-32",
+    "openclip_pretrained": "openai",
+    "aesthetic_head_path": "models/aesthetic_head.pth",
+    "device": "cpu"
+  },
+  "passed": true,
+  "generation_meta": {
+    "provider": "openai",
+    "model": "gpt-image-1-mini"
+  }
+}

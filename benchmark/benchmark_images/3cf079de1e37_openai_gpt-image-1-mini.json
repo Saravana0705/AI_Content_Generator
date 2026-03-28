@@ -1,0 +1,33 @@
+{
+  "run_id": "3cf079de1e37",
+  "timestamp_utc": "2026-03-05 15:23:27",
+  "provider": "openai",
+  "model": "gpt-image-1-mini",
+  "raw_prompt": "A chef preparing fresh pasta in a rustic Italian kitchen with warm window light",
+  "style": "3",
+  "size": "1024x1024",
+  "final_prompt": "A chef preparing fresh pasta in a rustic Italian kitchen with warm window light\n3",
+  "retries": 0,
+  "latency_sec": 50.63489930000105,
+  "calibration_path": "calibration/image_thresholds.json",
+  "thresholds": {
+    "clip_threshold": 0.2856234014034271,
+    "clip_q": 0.1,
+    "aesthetic_threshold": 6.084645795822144,
+    "aesthetic_r": 0.1
+  },
+  "scores": {
+    "ok": true,
+    "clip_score": 0.32123225927352905,
+    "aesthetic_score": 6.558792591094971,
+    "openclip_model": "ViT-B-32",
+    "openclip_pretrained": "openai",
+    "aesthetic_head_path": "models/aesthetic_head.pth",
+    "device": "cpu"
+  },
+  "passed": true,
+  "generation_meta": {
+    "provider": "openai",
+    "model": "gpt-image-1-mini"
+  }
+}
