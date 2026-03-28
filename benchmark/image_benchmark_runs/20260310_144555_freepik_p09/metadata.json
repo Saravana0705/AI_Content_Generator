@@ -1,0 +1,48 @@
+{
+  "benchmark_run_id": "20260310_142557",
+  "timestamp": "2026-03-10 14:45:55",
+  "prompt_id": "p09",
+  "provider": "freepik",
+  "model": "mystic",
+  "raw_prompt": "A red cat sitting beside a blue flower pot on a wooden table",
+  "enhanced_prompt": "A red cat sitting beside a blue flower pot on a wooden table\nphotorealistic, natural lighting, high detail, sharp focus\nSpatial constraints: beside.\nNegative: blurry, logo, low resolution, text, watermark.",
+  "final_prompt": "A red cat sitting beside a blue flower pot on a wooden table\nphotorealistic, natural lighting, high detail, sharp focus\nSpatial constraints: beside.\nNegative: blurry, logo, low resolution, text, watermark.",
+  "prompt_language": "en",
+  "intent": {
+    "raw_prompt": "A red cat sitting beside a blue flower pot on a wooden table",
+    "source_language": "en",
+    "style": "photorealistic",
+    "size": "1024x1024",
+    "subjects": [],
+    "counts": {},
+    "spatial_relations": [
+      "beside"
+    ],
+    "negative_constraints": [],
+    "must_have": [],
+    "exclude": [],
+    "enhanced_prompt": "A red cat sitting beside a blue flower pot on a wooden table\nphotorealistic, natural lighting, high detail, sharp focus\nSpatial constraints: beside.\nNegative: blurry, logo, low resolution, text, watermark."
+  },
+  "image_meta": {
+    "provider": "freepik",
+    "model": "mystic",
+    "size": "1024x1024",
+    "task_id": "86407c20-46a6-44af-b729-a22c3e7ef8f4",
+    "status": "COMPLETED",
+    "url": "https://cdn-magnific.freepik.com/result_MYSTIC_86407c20-46a6-44af-b729-a22c3e7ef8f4_0.jpeg?token=exp=1773153958~hmac=ab56fd66d61c70a5b10fc9e3f1022576d5da574eda6a092d09f966dbaf183152&size=stable",
+    "encoding": "url"
+  },
+  "technical_ok": true,
+  "scoring_ok": true,
+  "scoring_error": "",
+  "clip_score": 0.3687855899333954,
+  "clip_threshold": 0.2856234014034271,
+  "clip_q": 0.1,
+  "aesthetic_score": 7.140385627746582,
+  "aesthetic_threshold": 6.084645795822144,
+  "aesthetic_r": 0.1,
+  "calibration_window_size": 100,
+  "calibrated_at": "2026-03-04T18:12:17Z",
+  "retries": 0,
+  "approved": true
+}

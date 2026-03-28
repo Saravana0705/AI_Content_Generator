@@ -1,0 +1,12 @@
+{
+  "clip_threshold": 0.2856234014034271,
+  "aesthetic_threshold": 6.084645795822144,
+  "clip_q": 0.1,
+  "aesthetic_r": 0.1,
+  "window_size": 100,
+  "calibrated_at": "2026-03-04T18:12:17Z",
+  "style_default": "photorealistic",
+  "size_default": "1024x1024",
+  "clip_model": null,
+  "aesthetic_model": null
+}

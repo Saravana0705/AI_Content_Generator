@@ -1,0 +1,52 @@
+{
+  "benchmark_run_id": "20260310_142557",
+  "timestamp": "2026-03-10 14:34:22",
+  "prompt_id": "p14",
+  "provider": "openai",
+  "model": "gpt-image-1-mini",
+  "raw_prompt": "Eine junge Frau liest ein Buch in einem gemütlichen Café am Fenster",
+  "enhanced_prompt": "Eine junge Frau liest ein Buch in einem gemütlichen Café am Fenster\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf.",
+  "final_prompt": "Eine junge Frau liest ein Buch in einem gemütlichen Café am Fenster\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf. Muss enthalten: junge frau liest ein buch in einem gemütl. Anzahl genau beachten: junge frau liest ein buch in einem gemütlichen caf=1. Zu korrigierende Probleme: Technical validation OK.\nCLIP=0.261 | Aesthetic=7.65. Klare Komposition, hohe Details, starke semantische Übereinstimmung, hohe visuelle Qualität.",
+  "prompt_language": "de",
+  "intent": {
+    "raw_prompt": "Eine junge Frau liest ein Buch in einem gemütlichen Café am Fenster",
+    "source_language": "de",
+    "style": "photorealistic",
+    "size": "1024x1024",
+    "subjects": [
+      "junge frau liest ein buch in einem gemütl"
+    ],
+    "counts": {
+      "junge frau liest ein buch in einem gemütlichen caf": 1
+    },
+    "spatial_relations": [],
+    "negative_constraints": [],
+    "must_have": [
+      "junge frau liest ein buch in einem gemütl"
+    ],
+    "exclude": [],
+    "enhanced_prompt": "Eine junge Frau liest ein Buch in einem gemütlichen Café am Fenster\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf."
+  },
+  "image_meta": {
+    "provider": "openai",
+    "model": "gpt-image-1-mini",
+    "size": "1024x1024",
+    "encoding": "b64_json",
+    "retry": true,
+    "retry_reason": "Technical validation OK.\nCLIP=0.261 | Aesthetic=7.65",
+    "retry_prompt": "Eine junge Frau liest ein Buch in einem gemütlichen Café am Fenster\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf. Muss enthalten: junge frau liest ein buch in einem gemütl. Anzahl genau beachten: junge frau liest ein buch in einem gemütlichen caf=1. Zu korrigierende Probleme: Technical validation OK.\nCLIP=0.261 | Aesthetic=7.65. Klare Komposition, hohe Details, starke semantische Übereinstimmung, hohe visuelle Qualität."
+  },
+  "technical_ok": true,
+  "scoring_ok": true,
+  "scoring_error": "",
+  "clip_score": 0.2603844702243805,
+  "clip_threshold": 0.2856234014034271,
+  "clip_q": 0.1,
+  "aesthetic_score": 7.537631988525391,
+  "aesthetic_threshold": 6.084645795822144,
+  "aesthetic_r": 0.1,
+  "calibration_window_size": 100,
+  "calibrated_at": "2026-03-04T18:12:17Z",
+  "retries": 1,
+  "approved": true
+}

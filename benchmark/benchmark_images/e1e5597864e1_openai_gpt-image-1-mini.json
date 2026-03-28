@@ -1,0 +1,33 @@
+{
+  "run_id": "e1e5597864e1",
+  "timestamp_utc": "2026-03-05 15:22:11",
+  "provider": "openai",
+  "model": "gpt-image-1-mini",
+  "raw_prompt": "A futuristic drone delivering a package above a smart city skyline at sunrise",
+  "style": "anime",
+  "size": "1024x1024",
+  "final_prompt": "A futuristic drone delivering a package above a smart city skyline at sunrise\nanime",
+  "retries": 0,
+  "latency_sec": 53.60196029999861,
+  "calibration_path": "calibration/image_thresholds.json",
+  "thresholds": {
+    "clip_threshold": 0.2856234014034271,
+    "clip_q": 0.1,
+    "aesthetic_threshold": 6.084645795822144,
+    "aesthetic_r": 0.1
+  },
+  "scores": {
+    "ok": true,
+    "clip_score": 0.34242600202560425,
+    "aesthetic_score": 6.096418380737305,
+    "openclip_model": "ViT-B-32",
+    "openclip_pretrained": "openai",
+    "aesthetic_head_path": "models/aesthetic_head.pth",
+    "device": "cpu"
+  },
+  "passed": true,
+  "generation_meta": {
+    "provider": "openai",
+    "model": "gpt-image-1-mini"
+  }
+}

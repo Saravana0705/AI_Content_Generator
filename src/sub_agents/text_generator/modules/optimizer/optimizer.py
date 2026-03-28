@@ -1,245 +1,401 @@
-import re
 import logging
+import re
 from collections import Counter
+from typing import Any, Dict, Optional, Tuple
+
 from spellchecker import SpellChecker
 from textstat import textstat
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+
 from ..generator.content_generator import Generator
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class Optimizer:
-    def __init__(self):
+    """
+    Optimizes content and computes an optimization score.
+
+    Auto-revision behavior:
+    - If final_score < benchmark_score and auto_revise=True and revision_rounds < max_revision_rounds:
+        - rewrite content (LLM) and re-score
+        - return revision_metrics (initial_score, revised_score, score_improvement, revision_rounds)
+    - Else:
+        - no revision_metrics (None)
+    """
+
+    def __init__(self, benchmark_score: float = 60.0):
         self.spell = SpellChecker()
         self.sentiment_analyzer = SentimentIntensityAnalyzer()
-        self.benchmark_score = 60
+        self.benchmark_score = benchmark_score
         self.generator = Generator()
 
-    def llm_adjust_tone(self, text, tone):
-        if tone.lower() == "neutral":
-            return text
-        prompt = (
-            f"Please edit the following text to have a more professional and '{tone}' tone. "
-            "It is critical that you keep all specific keywords, topics, and the core message exactly the same. "
-            "Only modify the phrasing and sentence structure to change the tone. "
-            "Preserve the original paragraph formatting and hashtags.\n\n"
-            f"Original Text:\n---\n{text}\n---\n\nEdited Text:"
-        )
-        rewritten_text = self.generator.generate(prompt)
-        return rewritten_text if rewritten_text and rewritten_text.strip() else text
-
-    def preserve_paragraphs(self, text):
-        if not text or not isinstance(text, str):
+    # -----------------------------
+    # Utility helpers
+    # -----------------------------
+    def preserve_paragraphs(self, text: str) -> str:
+        if not text:
             return ""
-        paragraphs = text.split('\n\n')
-        optimized_paragraphs = [p for p in paragraphs if p.strip()]
-        return "\n\n".join(optimized_paragraphs)
+        text = re.sub(r"\r\n", "\n", text)
+        text = re.sub(r"\n{3,}", "\n\n", text)
+        return text.strip()
 
-    def optimize(self, text, original_topic, content_type="blog_article", tone="neutral", keywords=None, auto_revise: bool = True, _revision_round: int = 0):
-        logger.info(f"Starting optimization for content type: {content_type}...")
+    def llm_adjust_tone(self, text: str, tone: str) -> str:
+        """
+        Light placeholder. Keeps current text unchanged unless you later
+        add an explicit tone-adjustment LLM step.
+        """
+        if not text:
+            return ""
+        return text
 
-        optimized_text = self.preserve_paragraphs(text)
-        optimized_text = self.llm_adjust_tone(optimized_text, tone)
+    # -----------------------------
+    # English scoring path
+    # -----------------------------
+    def _score_text(self, optimized_text: str, original_topic: str, content_type: str) -> Tuple[float, str]:
+        """
+        English-oriented scoring path.
+        Uses readability/sentiment/repetition with content-type aware weighting.
+        """
+        optimized_text = self.preserve_paragraphs(optimized_text)
 
-        # --- Content type categories ---
-        long_form_types = ["blog_article", "script", "news_article"]
-        social_media_types = ["social_post", "tweet", "short_form_social"]
-        direct_response_types = ["email_copy", "video_description"]
-        utility_types = ["faq_section"]
+        long_form_types = {"blog_article", "script", "news_article"}
+        social_media_types = {"social_post", "tweet", "short_form_social"}
+        direct_response_types = {"email_copy", "video_description"}
+        utility_types = {"faq_section"}
 
-        # --- Initialize metrics ---
-        readability_notes = "**Not Applicable** (Readability assessment is not conducted for this content type)"
-        conciseness_notes = "**Not Applicable** (Conciseness evaluation is not prioritized for this content type)"
+        readability_notes = "**Not Applicable**"
+        conciseness_notes = "**Not Applicable**"
 
-        # --- Universal Calculations ---
-        sentiment = self.sentiment_analyzer.polarity_scores(optimized_text)['compound']
-        sentiment_score = ((sentiment + 1) / 2) * 100
+        sentiment = self.sentiment_analyzer.polarity_scores(optimized_text).get("compound", 0.0)
+        sentiment_score = ((sentiment + 1) / 2) * 100  # map [-1,1] -> [0,100]
 
-        topic_keywords = set(original_topic.lower().split())
-        words = optimized_text.lower().split()
-        trigrams = [" ".join(words[i:i+3]) for i in range(len(words)-2)]
-        repetition_penalty = 0
+        # repetition penalty (trigrams)
+        topic_keywords = set((original_topic or "").lower().split())
+        words = (optimized_text or "").lower().split()
+        trigrams = [" ".join(words[i:i + 3]) for i in range(max(0, len(words) - 2))]
+
+        repetition_penalty = 0.0
         repeated_phrases = Counter(trigrams)
         for phrase, count in repeated_phrases.items():
-            is_topic_phrase = any(keyword in phrase for keyword in topic_keywords)
-            if not is_topic_phrase and count > 2:
+            is_topic_phrase = any(k in phrase for k in topic_keywords if k)
+            if (not is_topic_phrase) and count > 2:
                 repetition_penalty += (count - 2) * 3
 
-        final_score = 0
+        final_score = 0.0
 
-        # --- Conditional Calculations ---
         if content_type in long_form_types:
             readability = textstat.flesch_reading_ease(optimized_text)
-            readability_score = max(0, min(100, readability))
+            readability_score = max(0.0, min(100.0, float(readability)))
             final_score = (readability_score * 0.6) + (sentiment_score * 0.4) - repetition_penalty
-            readability_notes = (
-                f"**{readability:.2f}** \n"
-                "(Flesch Reading Ease Score, range: 0–100, where higher values indicate greater readability. "
-                "Based on the Flesch formula, standardized by the U.S. Department of Education: "
-                "90–100 = Very Easy (5th grade level), 60–70 = Standard (suitable for general audiences), "
-                "0–30 = Very Difficult (academic or technical content))"
-            )
-            conciseness_notes = (
-                "**Not Applicable** \n"
-                "(For long-form content such as blog articles, scripts, and news articles, emphasis is placed on comprehensive coverage and detail, "
-                "aligning with best practices for in-depth communication as outlined by content marketing standards.)"
-            )
+            readability_notes = f"**{readability:.2f}**"
+            conciseness_notes = "**Not Applicable**"
 
         elif content_type in social_media_types:
             target_length = 280 if content_type == "tweet" else 600
-            conciseness_score = max(0, 100 - (len(optimized_text) / (target_length / 10)))
+            conciseness_score = max(0.0, 100.0 - (len(optimized_text) / (target_length / 10.0)))
             final_score = (sentiment_score * 0.7) + (conciseness_score * 0.3) - repetition_penalty
-            conciseness_notes = (
-                f"**{conciseness_score:.0f}/100** \n"
-                "(Conciseness metric evaluates adherence to platform-specific character limits: 280 characters for tweets, "
-                "600 characters for other social posts, per Twitter and social media marketing guidelines. Higher scores reflect concise, impactful content.)"
-            )
+            conciseness_notes = f"**{conciseness_score:.0f}/100**"
 
         elif content_type in direct_response_types:
             readability = textstat.flesch_reading_ease(optimized_text)
-            readability_score = max(0, min(100, readability))
+            readability_score = max(0.0, min(100.0, float(readability)))
             final_score = (readability_score * 0.5) + (sentiment_score * 0.5) - repetition_penalty
-            readability_notes = (
-                f"**{readability:.2f}** \n"
-                "(Flesch Reading Ease Score, range: 0–100, where higher values indicate greater readability. "
-                "Based on the Flesch formula, standardized by the U.S. Department of Education: "
-                "90–100 = Very Easy (5th grade level), 60–70 = Standard (suitable for general audiences), "
-                "0–30 = Very Difficult (academic or technical content). Optimal for direct response content is 60–70.)"
-            )
-            conciseness_notes = (
-                "**Not Applicable** \n"
-                "(Direct response content, such as email copy and video descriptions, prioritizes persuasive clarity and engagement, "
-                "consistent with marketing principles from the Direct Marketing Association.)"
-            )
+            readability_notes = f"**{readability:.2f}**"
+            conciseness_notes = "**Not Applicable**"
 
         elif content_type in utility_types:
             readability = textstat.flesch_reading_ease(optimized_text)
-            readability_score = max(0, min(100, readability))
-            final_score = (readability_score * 0.8) + (sentiment_score * 0.2) - (repetition_penalty / 2)
-            readability_notes = (
-                f"**{readability:.2f}** \n"
-                "(Flesch Reading Ease Score, range: 0–100, with a target of 70–90 for FAQs to ensure accessibility. "
-                "Based on the Flesch formula, standardized by the U.S. Department of Education: "
-                "90–100 = Very Easy (5th grade level), 60–70 = Standard, 0–30 = Very Difficult.)"
-            )
-            conciseness_notes = (
-                "**Not Applicable** \n"
-                "(FAQ sections prioritize clear, concise answers tailored to user queries, with length varying by complexity, "
-                "aligning with usability standards from the Nielsen Norman Group.)"
-            )
+            readability_score = max(0.0, min(100.0, float(readability)))
+            final_score = (readability_score * 0.8) + (sentiment_score * 0.2) - (repetition_penalty / 2.0)
+            readability_notes = f"**{readability:.2f}**"
+            conciseness_notes = "**Not Applicable**"
 
-        final_score = max(0, min(100, final_score))
+        else:
+            readability = textstat.flesch_reading_ease(optimized_text)
+            readability_score = max(0.0, min(100.0, float(readability)))
+            final_score = (readability_score * 0.6) + (sentiment_score * 0.4) - repetition_penalty
+            readability_notes = f"**{readability:.2f}**"
 
-        # --- Construct Analysis Notes ---
+        final_score = max(0.0, min(100.0, float(final_score)))
+
         score_report = (
             f"---\n"
             f"**Optimization Analysis Report:**\n"
             f"- **Readability:** {readability_notes}\n"
             f"- **Conciseness:** {conciseness_notes}\n"
-            f"- **Sentiment Score:** {sentiment:.2f} \n"
-            "(Compound sentiment score from VADER, ranging from -1 (highly negative) to 1 (highly positive), "
-            "a widely accepted metric in natural language processing for assessing emotional tone.)\n"
-            f"- **Repetition Penalty:** {repetition_penalty} \n"
-            "(Penalty applied for non-topic-related phrase repetition, calculated as (count - 2) * 3 per occurrence, "
-            "promoting originality and clarity in line with content quality standards.)\n\n"
+            f"- **Sentiment Score:** {sentiment:.2f}\n"
+            f"- **Repetition Penalty:** {repetition_penalty:.0f}\n\n"
             f"**Final Optimization Score:** {final_score:.0f}/100\n"
         )
-        
-        if final_score < self.benchmark_score:
-            score_report += (
-                "(Score falls below the established benchmark of "
-                f"{self.benchmark_score}/100, indicating that the content may require "
-                "further refinement or revision to meet quality standards.)\n"
+        return final_score, score_report
+
+    # -----------------------------
+    # German scoring path
+    # -----------------------------
+    def _score_text_german(
+        self,
+        *,
+        optimized_text: str,
+        original_topic: str,
+        content_type: str,
+        keywords: Optional[list] = None,
+    ) -> Tuple[float, str]:
+        """
+        German-safe heuristic scoring path.
+        Avoids English-specific readability/sentiment assumptions.
+        """
+        keywords = keywords or []
+        text = self.preserve_paragraphs(optimized_text)
+
+        words = re.findall(r"\b\w+\b", text, flags=re.UNICODE)
+        sentences = [s.strip() for s in re.split(r"[.!?]+", text) if s.strip()]
+        paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text) if p.strip()]
+
+        word_count = len(words)
+        sentence_count = max(1, len(sentences))
+        paragraph_count = len(paragraphs)
+        avg_sentence_len = word_count / sentence_count
+
+        # repetition penalty (trigrams)
+        lowered_words = [w.lower() for w in words]
+        trigrams = [" ".join(lowered_words[i:i + 3]) for i in range(max(0, len(lowered_words) - 2))]
+        repeated_phrases = Counter(trigrams)
+
+        topic_keywords = set(
+            re.findall(r"\b\w+\b", (original_topic or "").lower(), flags=re.UNICODE)
+        )
+
+        repetition_penalty = 0.0
+        for phrase, count in repeated_phrases.items():
+            is_topic_phrase = any(k in phrase for k in topic_keywords if k)
+            if (not is_topic_phrase) and count > 2:
+                repetition_penalty += (count - 2) * 3
+
+        # keyword coverage
+        lowered_text = text.lower()
+        keyword_hits = 0
+        for kw in keywords:
+            kw_clean = (kw or "").strip().lower()
+            if kw_clean and kw_clean in lowered_text:
+                keyword_hits += 1
+
+        keyword_coverage = (
+            (keyword_hits / max(1, len(keywords))) * 100.0
+            if keywords
+            else 80.0
+        )
+
+        # sentence length heuristic
+        if avg_sentence_len <= 16:
+            sentence_score = 100.0
+        elif avg_sentence_len <= 22:
+            sentence_score = 85.0
+        elif avg_sentence_len <= 28:
+            sentence_score = 65.0
+        else:
+            sentence_score = 40.0
+
+        # paragraph structure
+        if content_type in {"blog_article", "news_article", "script", "faq_section"}:
+            paragraph_score = 100.0 if paragraph_count >= 3 else 60.0
+        else:
+            paragraph_score = 100.0 if paragraph_count >= 1 else 60.0
+
+        # length / conciseness
+        if content_type == "tweet":
+            length_score = (
+                100.0 if len(text) <= 280
+                else max(0.0, 100.0 - (len(text) - 280) * 0.5)
+            )
+        elif content_type in {"social_post", "short_form_social"}:
+            length_score = (
+                100.0 if word_count <= 120
+                else max(40.0, 100.0 - (word_count - 120) * 0.5)
+            )
+        elif content_type == "email_copy":
+            length_score = 100.0 if 80 <= word_count <= 250 else 70.0
+        elif content_type == "faq_section":
+            length_score = 100.0 if word_count >= 120 else 70.0
+        else:
+            length_score = 100.0 if word_count >= 150 else 65.0
+
+        final_score = (
+            sentence_score * 0.30
+            + paragraph_score * 0.20
+            + length_score * 0.25
+            + keyword_coverage * 0.25
+            - repetition_penalty
+        )
+        final_score = max(0.0, min(100.0, final_score))
+
+        score_report = (
+            f"---\n"
+            f"**German Optimization Analysis Report:**\n"
+            f"- **Word Count:** {word_count}\n"
+            f"- **Paragraph Count:** {paragraph_count}\n"
+            f"- **Average Sentence Length:** {avg_sentence_len:.1f}\n"
+            f"- **Sentence Length Score:** {sentence_score:.0f}/100\n"
+            f"- **Paragraph Structure Score:** {paragraph_score:.0f}/100\n"
+            f"- **Length Score:** {length_score:.0f}/100\n"
+            f"- **Keyword Coverage:** {keyword_coverage:.0f}/100\n"
+            f"- **Repetition Penalty:** {repetition_penalty:.0f}\n\n"
+            f"**Final Optimization Score:** {final_score:.0f}/100\n"
+        )
+        return final_score, score_report
+
+    # -----------------------------
+    # Public optimize entrypoint
+    # -----------------------------
+    def optimize(
+        self,
+        *,
+        text: str,
+        original_topic: str,
+        content_type: str = "blog_article",
+        tone: str = "neutral",
+        keywords: Optional[list] = None,
+        language: str = "en",
+        auto_revise: bool = True,
+        revision_rounds: int = 0,
+        max_revision_rounds: int = 1,
+    ) -> Tuple[str, float, str, Optional[Dict[str, Any]]]:
+        """
+        Returns:
+          optimized_text: str
+          final_score: float
+          notes: str
+          revision_metrics: Optional[dict]
+            - Only non-None when score < benchmark and auto revision was actually applied
+        """
+        keywords = keywords or []
+        language = (language or "en").strip().lower()
+        if language not in {"en", "de"}:
+            language = "en"
+
+        revision_metrics: Optional[Dict[str, Any]] = None
+
+        # Pass 1: normalize + adjust tone
+        optimized_text = self.preserve_paragraphs(text)
+        optimized_text = self.llm_adjust_tone(optimized_text, tone)
+
+        # Score pass 1
+        if language == "de":
+            final_score, notes = self._score_text_german(
+                optimized_text=optimized_text,
+                original_topic=original_topic,
+                content_type=content_type,
+                keywords=keywords,
+            )
+        else:
+            final_score, notes = self._score_text(
+                optimized_text,
+                original_topic,
+                content_type,
             )
 
-        # Build notes for this optimization pass
-        notes = score_report
-
-        # --- Automatic Revision Step ---
-        MAX_REVISION_ROUNDS = 2 
+        # Decide whether to auto-revise
         if (
-            final_score < self.benchmark_score
-            and auto_revise
-            and _revision_round < MAX_REVISION_ROUNDS
+            auto_revise
+            and final_score < float(self.benchmark_score)
+            and revision_rounds < max_revision_rounds
         ):
             logger.info(
-                f"Final score {final_score:.0f} < benchmark {self.benchmark_score}. "
-                "Triggering automatic revision via Generator..."
+                f"Score {final_score:.0f} < {self.benchmark_score:.0f}. "
+                f"Auto-revision round {revision_rounds + 1}."
             )
 
-            # Build a revision prompt using current content + analysis notes
             kw_text = ", ".join(keywords or []) if keywords else "None specified"
-            revision_prompt = (
-                "Rewrite the following content in a MUCH simpler and more readable way.\n"
-                "Your goal is to dramatically increase readability.\n\n"
 
-                "IMPORTANT — You MUST follow these rules:\n"
-                "- Write at a 6th–8th grade reading level.\n"
-                "- Use ONLY short sentences (8–14 words each).\n"
-                "- Use simple, everyday vocabulary.\n"
-                "- Break long paragraphs into small sections.\n"
-                "- Remove all unnecessary details.\n"
-                "- Prioritize clarity over style.\n"
-                "- Do not use complex phrasing.\n"
-                "- Avoid long introductions; get to the point quickly.\n"
-                "- Aim for a Flesch Reading Ease score ABOVE 60.\n\n"
-
-                f"Topic: {original_topic}\n"
-                f"Content Type: {content_type}\n"
-                f"Tone: {tone}\n"
-                f"Keywords: {kw_text}\n\n"
-
-                "Here is the content that must be simplified:\n"
-                "-----\n"
-                f"{optimized_text}\n"
-                "-----\n\n"
-
-                "Here are analysis notes showing weaknesses:\n"
-                "-----\n"
-                f"{notes}\n"
-                "-----\n\n"
-
-                "Now rewrite the content so it is extremely easy to read.\n"
-                "Return ONLY the simplified content with no explanations."
-            )
-
-            revised_text = self.generator.generate(revision_prompt)
-
-            # Safety check – if the LLM failed, fall back to original content
-            if not revised_text or "Error generating content" in revised_text:
-                logger.warning(
-                    "Automatic revision failed or returned an error. "
-                    "Returning original optimized text."
+            if language == "de":
+                revision_prompt = (
+                    "Überarbeite den folgenden Text auf Deutsch so, dass er klarer, "
+                    "einfacher und besser strukturiert ist.\n\n"
+                    "Wichtige Regeln:\n"
+                    "- Schreibe in einfachem, natürlichem Deutsch.\n"
+                    "- Verwende eher kurze Sätze.\n"
+                    "- Teile lange Absätze in kleinere Abschnitte.\n"
+                    "- Vermeide unnötige Wiederholungen.\n"
+                    "- Bewahre die Bedeutung des Inhalts.\n"
+                    "- Behalte wichtige Schlüsselwörter bei.\n"
+                    "- Erfinde keine neuen Fakten.\n\n"
+                    f"Thema: {original_topic}\n"
+                    f"Inhaltstyp: {content_type}\n"
+                    f"Ton: {tone}\n"
+                    f"Schlüsselwörter: {kw_text}\n\n"
+                    "Hier ist der zu überarbeitende Text:\n"
+                    "-----\n"
+                    f"{optimized_text}\n"
+                    "-----\n\n"
+                    "Hier sind die Analysehinweise:\n"
+                    "-----\n"
+                    f"{notes}\n"
+                    "-----\n\n"
+                    "Gib nur die überarbeitete deutsche Fassung zurück, ohne Erklärungen."
                 )
-                logger.info(f"Optimization complete. Final Score: {final_score:.0f}")
-                return optimized_text, final_score, notes
+            else:
+                revision_prompt = (
+                    "Rewrite the following content in a MUCH simpler and more readable way.\n"
+                    "Your goal is to dramatically increase readability.\n\n"
+                    "IMPORTANT — You MUST follow these rules:\n"
+                    "- Write at a 6th–8th grade reading level.\n"
+                    "- Use ONLY short sentences (8–14 words each).\n"
+                    "- Use simple, everyday vocabulary.\n"
+                    "- Break long paragraphs into small sections.\n"
+                    "- Remove all unnecessary details.\n"
+                    "- Prioritize clarity over style.\n"
+                    "- Do not use complex phrasing.\n"
+                    "- Avoid long introductions; get to the point quickly.\n"
+                    "- Aim for a Flesch Reading Ease score ABOVE 60.\n\n"
+                    f"Topic: {original_topic}\n"
+                    f"Content Type: {content_type}\n"
+                    f"Tone: {tone}\n"
+                    f"Keywords: {kw_text}\n\n"
+                    "Here is the content that must be simplified:\n"
+                    "-----\n"
+                    f"{optimized_text}\n"
+                    "-----\n\n"
+                    "Here are analysis notes showing weaknesses:\n"
+                    "-----\n"
+                    f"{notes}\n"
+                    "-----\n\n"
+                    "Now rewrite the content so it is extremely easy to read.\n"
+                    "Return ONLY the simplified content with no explanations."
+                )
 
-            # Re-run optimization ONCE on the revised text (no further auto-revision)
-            logger.info("Running second optimization pass on revised content...")
-            
-            revised_optimized_text, revised_score, revised_notes = self.optimize(text=revised_text, original_topic=original_topic, content_type=content_type, tone=tone, keywords=keywords, auto_revise=True, _revision_round=_revision_round + 1)
-            # Log score improvement
-            logger.info(
-                f"Auto-Revision Performance:\n"
-                f" - Initial score: {final_score:.2f}\n"
-                f" - Revised score: {revised_score:.2f}\n"
-                f" - Improvement: {revised_score - final_score:.2f} points"
-            )
+            try:
+                revised_text = self.generator.generate(revision_prompt)
+                revised_text = self.preserve_paragraphs(revised_text)
 
-            # Add improvement info to notes
-            improvement_text = (
-                f"\n\n[Auto-Revision Applied]\n"
-                f"Initial Score: {final_score:.2f}\n"
-                f"Revised Score: {revised_score:.2f}\n"
-                f"Score Improvement: {revised_score - final_score:.2f}"
-            )
+                if language == "de":
+                    revised_score, revised_notes = self._score_text_german(
+                        optimized_text=revised_text,
+                        original_topic=original_topic,
+                        content_type=content_type,
+                        keywords=keywords,
+                    )
+                else:
+                    revised_score, revised_notes = self._score_text(
+                        revised_text,
+                        original_topic,
+                        content_type,
+                    )
 
-            revised_notes = (revised_notes or "") + improvement_text
+                revision_metrics = {
+                    "initial_score": float(final_score),
+                    "revised_score": float(revised_score),
+                    "score_improvement": float(revised_score - final_score),
+                    "revision_rounds": int(revision_rounds + 1),
+                }
 
-            return revised_optimized_text, revised_score, revised_notes
-            
-            
-        # --- Normal return path (no auto-revision or second pass) ---
-        logger.info(f"Optimization complete. Final Score: {final_score:.0f}")
-        return optimized_text, final_score, notes
+                # Keep revised text only if it improved or matched
+                if revised_score >= final_score:
+                    optimized_text = revised_text
+                    final_score = revised_score
+                    notes = revised_notes
+
+            except Exception as e:
+                logger.warning(f"Auto-revision failed: {e}")
+
+        return optimized_text, float(final_score), notes, revision_metrics

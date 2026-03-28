@@ -1,0 +1,82 @@
+[
+  {
+    "id": "p01",
+    "prompt": "Write a blog article explaining what artificial intelligence is and how it is used in everyday life."
+  },
+  {
+    "id": "p02",
+    "prompt": "Create a blog post about the benefits of learning programming for students and professionals."
+  },
+  {
+    "id": "p03",
+    "prompt": "Explain the concept of machine learning in simple terms in a blog format."
+  },
+  {
+    "id": "p04",
+    "prompt": "Write a blog article discussing common productivity mistakes people make while working remotely."
+  },
+  {
+    "id": "p05",
+    "prompt": "Create a blog post explaining how data science helps businesses make better decisions."
+  },
+  {
+    "id": "p06",
+    "prompt": "Write a blog article about the importance of time management for personal productivity."
+  },
+  {
+    "id": "p07",
+    "prompt": "Explain the difference between artificial intelligence, machine learning, and deep learning in a simple blog."
+  },
+  {
+    "id": "p08",
+    "prompt": "Write a blog post about best practices for learning new technical skills efficiently."
+  },
+  {
+    "id": "p09",
+    "prompt": "Describe the role of data visualization in understanding complex information in a blog article."
+  },
+  {
+    "id": "p10",
+    "prompt": "Create a blog explaining how automation tools can improve workplace efficiency."
+  },
+  {
+    "id": "p11",
+    "prompt": "Write a blog article about common challenges beginners face when learning data science."
+  },
+  {
+    "id": "p12",
+    "prompt": "Explain how artificial intelligence is changing the way people learn and study."
+  },
+  {
+    "id": "p13",
+    "prompt": "Write a blog post discussing the importance of critical thinking in problem solving."
+  },
+  {
+    "id": "p14",
+    "prompt": "Create a blog article explaining the basics of cloud computing for beginners."
+  },
+  {
+    "id": "p15",
+    "prompt": "Write a blog post about how good documentation improves software development projects."
+  },
+  {
+    "id": "p16",
+    "prompt": "Explain the importance of data privacy and security in modern digital systems."
+  },
+  {
+    "id": "p17",
+    "prompt": "Write a blog article about how habit-building techniques can improve long-term productivity."
+  },
+  {
+    "id": "p18",
+    "prompt": "Create a blog post explaining how version control systems help teams collaborate better."
+  },
+  {
+    "id": "p19",
+    "prompt": "Write a blog article discussing the role of artificial intelligence in data analysis."
+  },
+  {
+    "id": "p20",
+    "prompt": "Explain why continuous learning is important in fast-changing technology careers."
+  }
+]

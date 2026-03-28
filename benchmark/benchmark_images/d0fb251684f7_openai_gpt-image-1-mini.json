@@ -1,0 +1,33 @@
+{
+  "run_id": "d0fb251684f7",
+  "timestamp_utc": "2026-03-05 15:26:06",
+  "provider": "openai",
+  "model": "gpt-image-1-mini",
+  "raw_prompt": "An astronaut standing beside a rover on Mars with dust in the air, cinematic lighting",
+  "style": "anime",
+  "size": "1024x1024",
+  "final_prompt": "An astronaut standing beside a rover on Mars with dust in the air, cinematic lighting\nanime",
+  "retries": 0,
+  "latency_sec": 52.3508511,
+  "calibration_path": "calibration/image_thresholds.json",
+  "thresholds": {
+    "clip_threshold": 0.2856234014034271,
+    "clip_q": 0.1,
+    "aesthetic_threshold": 6.084645795822144,
+    "aesthetic_r": 0.1
+  },
+  "scores": {
+    "ok": true,
+    "clip_score": 0.3207358419895172,
+    "aesthetic_score": 6.351011276245117,
+    "openclip_model": "ViT-B-32",
+    "openclip_pretrained": "openai",
+    "aesthetic_head_path": "models/aesthetic_head.pth",
+    "device": "cpu"
+  },
+  "passed": true,
+  "generation_meta": {
+    "provider": "openai",
+    "model": "gpt-image-1-mini"
+  }
+}

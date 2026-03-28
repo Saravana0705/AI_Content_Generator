@@ -1,0 +1,49 @@
+run_id,timestamp_utc,provider,model,prompt_id,raw_prompt,style,size,final_prompt,latency_sec,retries,technical_ok,scoring_ok,scoring_error,clip_score,clip_threshold,clip_q,aesthetic_score,aesthetic_threshold,aesthetic_r,passed,image_path,metadata_path
+92776f4953b7,05-03-2026 21:35,freepik,,1,"A wildlife scene with two zebras crossing a shallow river, water splashing, documentary photo",photorealistic,1024x1024,"A wildlife scene with two zebras crossing a shallow river, water splashing, documentary photo
+photorealistic",0.673,0,FALSE,FALSE,generation_failed: HTTPError: 400 Client Error: Bad Request for url: https://api.freepik.com/v1/ai/text-to-image,0,0.285623,0.1,0,6.084646,0.1,FALSE,,
+fe83e4efb92c,05-03-2026 21:35,freepik,https://api.freepik.com/v1/ai/text-to-image,2,A futuristic drone delivering a package above a smart city skyline at sunrise,anime,1024x1024,"A futuristic drone delivering a package above a smart city skyline at sunrise
+anime
+photorealistic, high detail, sharp focus
+Negative: blurry, low resolution, watermark, text, logo",20.722,1,TRUE,TRUE,,0.359964,0.285623,0.1,5.702517,6.084646,0.1,FALSE,exports\benchmark_images_freepik\fe83e4efb92c_freepik.png,exports\benchmark_images_freepik\fe83e4efb92c_freepik.json
+6791949cce7c,05-03-2026 21:35,freepik,https://api.freepik.com/v1/ai/text-to-image,3,A chef preparing fresh pasta in a rustic Italian kitchen with warm window light,3d,1024x1024,"A chef preparing fresh pasta in a rustic Italian kitchen with warm window light
+3d",11.753,0,TRUE,TRUE,,0.347635,0.285623,0.1,6.999363,6.084646,0.1,TRUE,exports\benchmark_images_freepik\6791949cce7c_freepik.png,exports\benchmark_images_freepik\6791949cce7c_freepik.json
+31b4a78586da,05-03-2026 21:35,freepik,,4,"A group of friends hiking across a suspension bridge in a forest valley, candid photo",illustration,1024x1024,"A group of friends hiking across a suspension bridge in a forest valley, candid photo
+illustration",1.266,0,FALSE,FALSE,generation_failed: HTTPError: 400 Client Error: Bad Request for url: https://api.freepik.com/v1/ai/text-to-image,0,0.285623,0.1,0,6.084646,0.1,FALSE,,
+74e0435ea64a,05-03-2026 21:35,freepik,,5,"A surfer riding a large wave during sunrise on a tropical beach, action shot",photorealistic,1024x1024,"A surfer riding a large wave during sunrise on a tropical beach, action shot
+photorealistic",0.669,0,FALSE,FALSE,generation_failed: HTTPError: 400 Client Error: Bad Request for url: https://api.freepik.com/v1/ai/text-to-image,0,0.285623,0.1,0,6.084646,0.1,FALSE,,
+19a79bdafbb9,05-03-2026 21:36,freepik,https://api.freepik.com/v1/ai/text-to-image,6,"An astronaut standing beside a rover on Mars with dust in the air, cinematic lighting",anime,1024x1024,"An astronaut standing beside a rover on Mars with dust in the air, cinematic lighting
+anime",10.279,0,TRUE,TRUE,,0.314178,0.285623,0.1,6.101576,6.084646,0.1,TRUE,exports\benchmark_images_freepik\19a79bdafbb9_freepik.png,exports\benchmark_images_freepik\19a79bdafbb9_freepik.json
+c1f71a560f13,05-03-2026 21:36,freepik,https://api.freepik.com/v1/ai/text-to-image,7,"A busy night market street in Tokyo with neon lights, food stalls, and umbrellas in the rain",3d,1024x1024,"A busy night market street in Tokyo with neon lights, food stalls, and umbrellas in the rain
+3d",9.843,0,TRUE,TRUE,,0.337175,0.285623,0.1,8.085186,6.084646,0.1,TRUE,exports\benchmark_images_freepik\c1f71a560f13_freepik.png,exports\benchmark_images_freepik\c1f71a560f13_freepik.json
+1ac7eee7091a,05-03-2026 21:36,freepik,,8,"A cozy reading nook with an armchair, blanket, floor lamp, and rainy window in the background",illustration,1024x1024,"A cozy reading nook with an armchair, blanket, floor lamp, and rainy window in the background
+illustration",0.59,0,FALSE,FALSE,generation_failed: HTTPError: 400 Client Error: Bad Request for url: https://api.freepik.com/v1/ai/text-to-image,0,0.285623,0.1,0,6.084646,0.1,FALSE,,
+94336e6517fb,05-03-2026 21:36,freepik,,9,"A red vintage bicycle leaning against a brick wall with ivy, golden hour lighting",photorealistic,1024x1024,"A red vintage bicycle leaning against a brick wall with ivy, golden hour lighting
+photorealistic",0.638,0,FALSE,FALSE,generation_failed: HTTPError: 400 Client Error: Bad Request for url: https://api.freepik.com/v1/ai/text-to-image,0,0.285623,0.1,0,6.084646,0.1,FALSE,,
+8357cb944e95,05-03-2026 21:36,freepik,https://api.freepik.com/v1/ai/text-to-image,10,"A scientist working in a futuristic lab with holographic displays, high detail",anime,1024x1024,"A scientist working in a futuristic lab with holographic displays, high detail
+anime",10.903,0,TRUE,TRUE,,0.342851,0.285623,0.1,6.748915,6.084646,0.1,TRUE,exports\benchmark_images_freepik\8357cb944e95_freepik.png,exports\benchmark_images_freepik\8357cb944e95_freepik.json
+e9f6875f5dd4,05-03-2026 21:53,freepik,https://api.freepik.com/v1/ai/text-to-image,1,"A wildlife scene with two zebras crossing a shallow river, water splashing, documentary photo",photorealistic,1024x1024,"A wildlife scene with two zebras crossing a shallow river, water splashing, documentary photo
+photorealistic
+photorealistic, high detail, sharp focus
+Negative: blurry, low resolution, watermark, text, logo",21.144,1,TRUE,TRUE,,0.344787,0.285623,0.1,5.690932,6.084646,0.1,FALSE,exports\benchmark_images_freepik\e9f6875f5dd4_freepik.png,exports\benchmark_images_freepik\e9f6875f5dd4_freepik.json
+70b90c9adc68,05-03-2026 21:53,freepik,https://api.freepik.com/v1/ai/text-to-image,2,A futuristic drone delivering a package above a smart city skyline at sunrise,anime,1024x1024,"A futuristic drone delivering a package above a smart city skyline at sunrise
+anime
+photorealistic, high detail, sharp focus
+Negative: blurry, low resolution, watermark, text, logo",19.361,1,TRUE,TRUE,,0.333094,0.285623,0.1,5.830204,6.084646,0.1,FALSE,exports\benchmark_images_freepik\70b90c9adc68_freepik.png,exports\benchmark_images_freepik\70b90c9adc68_freepik.json
+d7da4e6e22b2,05-03-2026 21:53,freepik,https://api.freepik.com/v1/ai/text-to-image,3,A chef preparing fresh pasta in a rustic Italian kitchen with warm window light,3d,1024x1024,"A chef preparing fresh pasta in a rustic Italian kitchen with warm window light
+3d",9.66,0,TRUE,TRUE,,0.343351,0.285623,0.1,7.151805,6.084646,0.1,TRUE,exports\benchmark_images_freepik\d7da4e6e22b2_freepik.png,exports\benchmark_images_freepik\d7da4e6e22b2_freepik.json
+6ccae11da7d9,05-03-2026 21:53,freepik,https://api.freepik.com/v1/ai/text-to-image,4,"A group of friends hiking across a suspension bridge in a forest valley, candid photo",illustration,1024x1024,"A group of friends hiking across a suspension bridge in a forest valley, candid photo
+illustration",10.195,0,TRUE,TRUE,,0.332056,0.285623,0.1,7.622601,6.084646,0.1,TRUE,exports\benchmark_images_freepik\6ccae11da7d9_freepik.png,exports\benchmark_images_freepik\6ccae11da7d9_freepik.json
+7efde67ebdb8,05-03-2026 21:54,freepik,https://api.freepik.com/v1/ai/text-to-image,5,"A surfer riding a large wave during sunrise on a tropical beach, action shot",photorealistic,1024x1024,"A surfer riding a large wave during sunrise on a tropical beach, action shot
+photorealistic",11.311,0,TRUE,TRUE,,0.334363,0.285623,0.1,7.68387,6.084646,0.1,TRUE,exports\benchmark_images_freepik\7efde67ebdb8_freepik.png,exports\benchmark_images_freepik\7efde67ebdb8_freepik.json
+26b30364a77f,05-03-2026 21:54,freepik,https://api.freepik.com/v1/ai/text-to-image,6,"An astronaut standing beside a rover on Mars with dust in the air, cinematic lighting",anime,1024x1024,"An astronaut standing beside a rover on Mars with dust in the air, cinematic lighting
+anime",16.088,0,TRUE,TRUE,,0.302691,0.285623,0.1,6.084859,6.084646,0.1,TRUE,exports\benchmark_images_freepik\26b30364a77f_freepik.png,exports\benchmark_images_freepik\26b30364a77f_freepik.json
+616eb6d9d1c1,05-03-2026 21:54,freepik,https://api.freepik.com/v1/ai/text-to-image,7,"A busy night market street in Tokyo with neon lights, food stalls, and umbrellas in the rain",3d,1024x1024,"A busy night market street in Tokyo with neon lights, food stalls, and umbrellas in the rain
+3d",14.411,0,TRUE,TRUE,,0.350317,0.285623,0.1,7.106684,6.084646,0.1,TRUE,exports\benchmark_images_freepik\616eb6d9d1c1_freepik.png,exports\benchmark_images_freepik\616eb6d9d1c1_freepik.json
+3f411e8cf511,05-03-2026 21:54,freepik,https://api.freepik.com/v1/ai/text-to-image,8,"A cozy reading nook with an armchair, blanket, floor lamp, and rainy window in the background",illustration,1024x1024,"A cozy reading nook with an armchair, blanket, floor lamp, and rainy window in the background
+illustration",12.792,0,TRUE,TRUE,,0.302793,0.285623,0.1,6.298307,6.084646,0.1,TRUE,exports\benchmark_images_freepik\3f411e8cf511_freepik.png,exports\benchmark_images_freepik\3f411e8cf511_freepik.json
+b82e42cde836,05-03-2026 21:55,freepik,https://api.freepik.com/v1/ai/text-to-image,9,"A red vintage bicycle leaning against a brick wall with ivy, golden hour lighting",photorealistic,1024x1024,"A red vintage bicycle leaning against a brick wall with ivy, golden hour lighting
+photorealistic",20.687,0,TRUE,TRUE,,0.312945,0.285623,0.1,7.45689,6.084646,0.1,TRUE,exports\benchmark_images_freepik\b82e42cde836_freepik.png,exports\benchmark_images_freepik\b82e42cde836_freepik.json
+78c68f3c2451,05-03-2026 21:55,freepik,https://api.freepik.com/v1/ai/text-to-image,10,"A scientist working in a futuristic lab with holographic displays, high detail",anime,1024x1024,"A scientist working in a futuristic lab with holographic displays, high detail
+anime
+photorealistic, high detail, sharp focus
+Negative: blurry, low resolution, watermark, text, logo",50.622,1,TRUE,TRUE,,0.308132,0.285623,0.1,6.761447,6.084646,0.1,TRUE,exports\benchmark_images_freepik\78c68f3c2451_freepik.png,exports\benchmark_images_freepik\78c68f3c2451_freepik.json

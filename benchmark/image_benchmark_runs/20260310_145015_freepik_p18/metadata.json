@@ -1,0 +1,55 @@
+{
+  "benchmark_run_id": "20260310_142557",
+  "timestamp": "2026-03-10 14:50:15",
+  "prompt_id": "p18",
+  "provider": "freepik",
+  "model": "mystic",
+  "raw_prompt": "Ein belebter Straßenmarkt in Marrakesch mit bunten Gewürzen und vielen Menschen",
+  "enhanced_prompt": "Ein belebter Straßenmarkt in Marrakesch mit bunten Gewürzen und vielen Menschen\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf.",
+  "final_prompt": "Ein belebter Straßenmarkt in Marrakesch mit bunten Gewürzen und vielen Menschen\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf. Muss enthalten: belebter straßenmarkt in marrakesch mit b. Anzahl genau beachten: belebter straßenmarkt in marrakesch mit bunten gewürzen und vielen menschen=1. Zu korrigierende Probleme: Technical validation OK.\nCLIP=0.259 | Aesthetic=7.48. Klare Komposition, hohe Details, starke semantische Übereinstimmung, hohe visuelle Qualität.",
+  "prompt_language": "de",
+  "intent": {
+    "raw_prompt": "Ein belebter Straßenmarkt in Marrakesch mit bunten Gewürzen und vielen Menschen",
+    "source_language": "de",
+    "style": "photorealistic",
+    "size": "1024x1024",
+    "subjects": [
+      "belebter straßenmarkt in marrakesch mit b"
+    ],
+    "counts": {
+      "belebter straßenmarkt in marrakesch mit bunten gewürzen und vielen menschen": 1
+    },
+    "spatial_relations": [],
+    "negative_constraints": [],
+    "must_have": [
+      "belebter straßenmarkt in marrakesch mit b"
+    ],
+    "exclude": [],
+    "enhanced_prompt": "Ein belebter Straßenmarkt in Marrakesch mit bunten Gewürzen und vielen Menschen\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf."
+  },
+  "image_meta": {
+    "provider": "freepik",
+    "model": "mystic",
+    "size": "1024x1024",
+    "task_id": "25b1d505-3ca3-4664-93d1-d47b864fc93c",
+    "status": "COMPLETED",
+    "url": "https://cdn-magnific.freepik.com/result_MYSTIC_25b1d505-3ca3-4664-93d1-d47b864fc93c_0.jpeg?token=exp=1773154238~hmac=c7e4d7cfc4383733500f7889117533315ac63906b61544b717ab20674491cbbb&size=stable",
+    "encoding": "url",
+    "retry": true,
+    "retry_reason": "Technical validation OK.\nCLIP=0.259 | Aesthetic=7.48",
+    "retry_prompt": "Ein belebter Straßenmarkt in Marrakesch mit bunten Gewürzen und vielen Menschen\nfotorealistisch, natürliche Beleuchtung, hohe Details, scharfer Fokus\nNicht enthalten: Logo, Text, Wasserzeichen, niedrige Auflösung, unscharf. Muss enthalten: belebter straßenmarkt in marrakesch mit b. Anzahl genau beachten: belebter straßenmarkt in marrakesch mit bunten gewürzen und vielen menschen=1. Zu korrigierende Probleme: Technical validation OK.\nCLIP=0.259 | Aesthetic=7.48. Klare Komposition, hohe Details, starke semantische Übereinstimmung, hohe visuelle Qualität."
+  },
+  "technical_ok": true,
+  "scoring_ok": true,
+  "scoring_error": "",
+  "clip_score": 0.2728636860847473,
+  "clip_threshold": 0.2856234014034271,
+  "clip_q": 0.1,
+  "aesthetic_score": 6.968138694763184,
+  "aesthetic_threshold": 6.084645795822144,
+  "aesthetic_r": 0.1,
+  "calibration_window_size": 100,
+  "calibrated_at": "2026-03-04T18:12:17Z",
+  "retries": 1,
+  "approved": true
+}

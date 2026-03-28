@@ -1,0 +1,33 @@
+{
+  "run_id": "7f75d84dd9e4",
+  "timestamp_utc": "2026-03-05 15:21:16",
+  "provider": "stability",
+  "model": "stable-diffusion-xl-1024-v1-0",
+  "raw_prompt": "A wildlife scene with two zebras crossing a shallow river, water splashing, documentary photo",
+  "style": "photorealistic",
+  "size": "1024x1024",
+  "final_prompt": "A wildlife scene with two zebras crossing a shallow river, water splashing, documentary photo\nphotorealistic",
+  "retries": 1,
+  "latency_sec": 25.42572029999974,
+  "calibration_path": "calibration/image_thresholds.json",
+  "thresholds": {
+    "clip_threshold": 0.2856234014034271,
+    "clip_q": 0.1,
+    "aesthetic_threshold": 6.084645795822144,
+    "aesthetic_r": 0.1
+  },
+  "scores": {
+    "ok": true,
+    "clip_score": 0.35751351714134216,
+    "aesthetic_score": 5.904295921325684,
+    "openclip_model": "ViT-B-32",
+    "openclip_pretrained": "openai",
+    "aesthetic_head_path": "models/aesthetic_head.pth",
+    "device": "cpu"
+  },
+  "passed": false,
+  "generation_meta": {
+    "provider": "stability",
+    "model": "stable-diffusion-xl-1024-v1-0"
+  }
+}
