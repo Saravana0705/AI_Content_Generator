@@ -4,7 +4,6 @@
 The AI Content Generator is a modular system designed to automatically generate marketing text and images. It uses a multi-agent architecture where a central workflow coordinates specialized agents responsible for text and image generation.
 The system integrates prompt processing, retrieval mechanisms, quality evaluation and optimization to produce reliable and high-quality outputs. It is designed to be extensible and supports multiple models and languages.
 
-------------------------------------------------------------------------------
 
 ## Key Features
 - Text generation for marketing content (blogs, ads, descriptions, etc.)
@@ -17,7 +16,6 @@ The system integrates prompt processing, retrieval mechanisms, quality evaluatio
 - Multi-language support (English and German)
 - Benchmarking and evaluation framework
 
-------------------------------------------------------------------------------
 
 ## System Architecture
 The system follows a layered architecture:
@@ -45,7 +43,6 @@ The system follows a layered architecture:
    - Prompt and run logs  
 
 
-
 ## Workflow
 The execution flow of the system is:
 User Input → Supervisor → Router → Sub-Agent → Optimization → Review → Export
@@ -68,7 +65,6 @@ Each sub-agent follows a structured pipeline:
 - Review output
 - Export result
 
-------------------------------------------------------------------------------
 
 ## Text Generation Module
 The text generation system includes:
@@ -79,7 +75,6 @@ The text generation system includes:
 - Reviewer: Converts scores into approval decisions  
 - Exporter: Saves outputs and metadata  
 
-------------------------------------------------------------------------------
 
 ## Image Generation Module
 The image generation system includes:
@@ -90,7 +85,6 @@ The image generation system includes:
 - Reviewer: Provides quality feedback  
 - Exporter: Stores images and metadata  
 
-------------------------------------------------------------------------------
 
 ## Quality Evaluation
 
@@ -104,8 +98,6 @@ The image generation system includes:
 - CLIP score (semantic alignment)
 - Aesthetic score (visual quality)
 - Technical validation
-
-------------------------------------------------------------------------------
 
 ## Benchmarking
 The project includes benchmarking for both text and image models.
@@ -126,7 +118,6 @@ Key observations:
 - Open models can achieve competitive performance with lower latency  
 - Image models show trade-offs between quality, speed, and reliability  
 
-------------------------------------------------------------------------------
 
 ## Technologies Used
 - Python
@@ -140,7 +131,6 @@ Key observations:
 - OpenCLIP
 - Pillow (PIL)
 
-------------------------------------------------------------------------------
 
 ## How to Run
 1. Clone the repository:
@@ -171,11 +161,10 @@ OPENAI_API_KEY=your_key
 streamlit run app.py
 ```
 
-------------------------------------------------------------------------------
 
 ```markdown
 ## Project Structure
-
+```
 ```text
 AI_Content_Generator/
 ├── assets/              # icons and UI assets
@@ -199,8 +188,8 @@ AI_Content_Generator/
 ├── Dockerfile
 ├── requirements.txt
 └── README.md
+```
 
-------------------------------------------------------------------------------
 
 ## Future Improvements
 - Add support for additional languages  
@@ -209,8 +198,6 @@ AI_Content_Generator/
 - Enhance UI and user interaction  
 - Integrate deployment pipeline  
 
-------------------------------------------------------------------------------
 
 ## Conclusion
-
 This project demonstrates a scalable and modular approach to automated content generation. The combination of structured workflows, evaluation mechanisms and multiple models enables consistent and high-quality output for both text and image generation tasks.
