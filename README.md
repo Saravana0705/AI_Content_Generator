@@ -44,7 +44,7 @@ The system follows a layered architecture:
    - Benchmark data  
    - Prompt and run logs  
 
-------------------------------------------------------------------------------
+
 
 ## Workflow
 The execution flow of the system is:
