@@ -19,7 +19,7 @@ The system integrates prompt processing, retrieval mechanisms, quality evaluatio
 
 ## System Architecture
 The system follows a layered architecture:
-
+<img width="782" height="1192" alt="AI Content Generator - Detailed Architecture" src="https://github.com/user-attachments/assets/cd0ee975-aa14-4502-830d-196e310c7e62" />
 1. User Interface Layer  
    - Streamlit-based web application  
    - Input forms and output viewer  
